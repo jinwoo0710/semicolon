@@ -304,14 +304,12 @@
 </head>
 <body>
     <div class="splash-screen" id="splash">
-        <div class="splash-logo">🛍️</div>
         <div class="splash-title">KOKO</div>
     </div>
 
     <div class="home-screen">
         <div class="header">
             <div class="logo">
-                <div class="logo-icon">🛍️</div>
                 <div class="logo-text">KOKO</div>
             </div>
             <button class="lang-btn" onclick="toggleLanguage()">
