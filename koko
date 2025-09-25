@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOKO - Korean Product Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- Reset & Global Styles --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        :root {
+            --primary-black: #111111;
+            --primary-white: #ffffff;
+            --accent-gray: #777777;
+            --light-gray: #f2f2f2;
+            --border-color: #dddddd;
+            --hover-color: #e8e8e8;
+            --focus-ring: rgba(17, 17, 17, 0.15);
+            --shadow-subtle: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary-white);
+            color: var(--primary-black);
+            line-height: 1.5;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- Splash Screen --- */
+        .splash-screen {
+            position: fixed; inset: 0; background: var(--primary-black); z-index: 10000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease-out;
+            gap: 1.5rem;
+            color: var(--primary-white); /* 스플래시 화면 텍스트 흰색 */
+        }
+        .splash-screen.fade-out { opacity: 0; pointer-events: none; }
+        .splash-logo {
+            font-size: 5rem;
+            opacity: 0;
+            animation: splashFadeIn 0.8s ease-out forwards;
+        }
+        .splash-title {
+            font-size: 3.5rem;
+            font-weight: 800; /* 더 굵게 */
+            letter-spacing: -0.05em;
+            opacity: 0;
+            animation: splashFadeIn 0.8s ease-out 0.3s forwards;
+        }
+        @keyframes splashFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Home Screen --- */
+        .home-screen {
+            min-height: 100vh; padding: 2.5rem 1.5rem; display: flex; flex-direction: column;
+            align-items: center;
+        }
+        .header {
+            width: 100%;
+            max-width: 500px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 4rem;
+        }
+        .logo { display: flex; align-items: center; gap: 0.75rem; }
+        .logo-icon { font-size: 2.25rem; }
+        .logo-text { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.03em; }
+        .lang-btn {
+            padding: 0.6rem 1rem;
+            background: var(--light-gray);
+            border: 1px solid var(--border-color); /* 각진 테두리 */
+            border-radius: 0; /* 각진 모서리 */
+            font-size: 0.9rem; font-weight: 600; cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: none; /* 그림자 없음 */
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+        .lang-btn:hover { background-color: var(--hover-color); transform: translateY(-1px); }
+        .lang-btn:active { transform: translateY(0); background-color: var(--light-gray); }
+
+        .main-content {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; text-align: center; gap: 3rem;
+            width: 100%; max-width: 500px;
+        }
+        .welcome-text h1 {
+              font-size: clamp(2.2rem, 8vw, 3.2rem);
+              font-weight: 800;
+              line-height: 1.2;
+              letter-spacing: -0.04em;
+              margin-bottom: 0.8rem;
+              white-space: nowrap; /* 이 줄을 추가하세요 */
+          }
+        .welcome-text p { font-size: 1.15rem; color: var(--accent-gray); font-weight: 500; }
+
+        .search-options { width: 100%; display: flex; flex-direction: column; gap: 1rem; }
+        .search-option {
+            background: var(--primary-white);
+            border: 2px solid var(--primary-black); /* 굵고 각진 테두리 */
+            border-radius: 0; /* 각진 모서리 */
+            padding: 1.5rem;
+            display: flex; align-items: center;
+            gap: 1rem; cursor: pointer;
+            transition: all 0.2s ease-out;
+            box-shadow: 4px 4px 0px var(--primary-black); /* 힙한 느낌의 그림자 */
+            position: relative;
+        }
+        .search-option:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px var(--primary-black); background-color: var(--light-gray); }
+        .search-option:active { transform: translate(0, 0); box-shadow: 4px 4px 0px var(--primary-black); }
+
+        .option-icon {
+            width: 3.5rem; height: 3.5rem;
+            /* background: var(--light-gray); */ /* 배경 없음 */
+            color: var(--primary-black);
+            border-radius: 0; /* 각진 모서리 */
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            border: 1px solid var(--border-color); /* 아이콘 자체도 테두리 */
+        }
+        .option-info { flex: 1; text-align: left; }
+        .option-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; letter-spacing: -0.01em; }
+        .option-desc { font-size: 0.9rem; color: var(--accent-gray); line-height: 1.4; font-weight: 400; }
+
+        /* --- Page Transitions (Common) --- */
+        .page-slide-up, .page-slide-right {
+            position: fixed; inset: 0; background: var(--primary-white); z-index: 1000;
+            transition: transform 0.3s cubic-bezier(0.7, 0, 0.3, 1); /* 더 빠르고 각진 애니메이션 곡선 */
+            box-shadow: none; /* 페이지 자체에 그림자 없음 */
+        }
+        .page-slide-up { transform: translateY(100%); }
+        .page-slide-up.active { transform: translateY(0); }
+        .page-slide-right { transform: translateX(100%); overflow-y: auto; }
+        .page-slide-right.active { transform: translateX(0); }
+
+        .page-header {
+            background: var(--primary-white);
+            /* backdrop-filter: blur(5px); */ /* 블러 효과 제거 */
+            padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.8rem;
+            border-bottom: 2px solid var(--primary-black); /* 굵은 하단 테두리 */
+            z-index: 100;
+            position: sticky; top: 0;
+        }
+        .back-btn {
+            width: 44px; height: 44px; border-radius: 0; /* 각진 모서리 */
+            background: var(--primary-black); color: var(--primary-white); /* 반전 색상 */
+            border: none;
+            font-size: 1.5rem; font-weight: 800; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease-out;
+            box-shadow: none;
+        }
+        .back-btn:hover { background-color: var(--accent-gray); transform: none; }
+        .back-btn:active { transform: none; box-shadow: none; }
+        .header-title { flex: 1; font-size: 1.1rem; font-weight: 700; text-align: center; margin-right: 2.75rem; }
+
+
+        /* --- Search Results Page --- */
+        .search-input {
+            flex: 1; padding: 0.8rem 1.2rem; border: 2px solid var(--primary-black); /* 굵은 테두리 */
+            border-radius: 0; /* 각진 모서리 */
+            background: var(--light-gray); font-size: 1rem;
+            outline: none; transition: all 0.2s ease-out;
+            box-shadow: inset 2px 2px 0px rgba(0,0,0,0.1);
+        }
+        .search-input:focus { border-color: var(--primary-black); background-color: var(--primary-white); box-shadow: inset 2px 2px 0px rgba(0,0,0,0.1), 0 0 0 3px var(--focus-ring); }
+
+        .results-container { padding: 0.5rem 1.5rem; }
+        .result-card {
+            background: transparent; border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0.5rem; cursor: pointer; transition: background-color 0.15s ease-out;
+            position: relative;
+        }
+        .result-card:last-child { border-bottom: none; }
+        .result-card:hover { background-color: var(--light-gray); }
+        .result-name { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.2rem; }
+        .result-desc { font-size: 0.85rem; color: var(--accent-gray); margin-bottom: 0.4rem; font-weight: 400; }
+        .result-company { font-size: 0.8rem; color: var(--accent-gray); opacity: 0.8; font-weight: 400; }
+
+        /* --- Detail Page --- */
+        .detail-hero {
+            padding: 2rem 1.5rem;
+            background: var(--primary-white);
+            border-bottom: 2px solid var(--primary-black); /* 굵은 하단 테두리 */
+        }
+        .detail-title { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+        .detail-subtitle { font-size: 1rem; color: var(--accent-gray); margin-bottom: 1.5rem; font-weight: 500; }
+
+        .detail-content { padding: 0 1.5rem 2rem; }
+        .info-grid {
+            display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .info-item {
+            background: transparent; padding: 0.9rem 0;
+            border-bottom: 1px solid var(--border-color); /* 일반 실선 */
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .info-item:last-child { border-bottom: none; }
+        .info-label { font-size: 0.9rem; color: var(--accent-gray); font-weight: 500; }
+        .info-value { font-size: 0.95rem; font-weight: 600; text-align: right; color: var(--primary-black); }
+
+        .section-title { font-size: 1.2rem; font-weight: 700; margin: 2rem 0 1rem; }
+        .section-text { font-size: 0.9rem; color: var(--accent-gray); line-height: 1.6; font-weight: 400; }
+
+        /* --- Scanner Modal --- */
+        .scanner-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 1rem; }
+        .scanner-modal.active { display: flex; }
+        .barcode-modal-content {
+            background: var(--primary-white); border-radius: 0; /* 각진 모서리 */
+            width: 100%; max-width: 500px; margin: 0 auto; overflow: hidden; display: flex; flex-direction: column;
+            border: 2px solid var(--primary-black); /* 굵은 테두리 */
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.2);
+        }
+        .barcode-header {
+            background: var(--primary-black); padding: 1rem 1.5rem; display: flex;
+            align-items: center; justify-content: space-between; color: var(--primary-white);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .close-scan-btn {
+            width: 36px; height: 36px; border-radius: 0; /* 각진 모서리 */
+            background: rgba(255,255,255,0.2);
+            border: none; color: var(--primary-white); font-size: 1.2rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;
+        }
+        .close-scan-btn:hover { background: rgba(255,255,255,0.3); }
+        .scan-title { font-size: 1.1rem; font-weight: 700; flex: 1; text-align: center; margin-right: 2.25rem; }
+
+        .scanner-container { position: relative; background: #000; height: 280px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        #scanner-viewport, #scanner-viewport video, #scanner-viewport canvas { width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0; }
+        .scan-overlay { position: absolute; inset: 0; pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .scan-guide { width: 70%; max-width: 300px; height: 120px; position: relative; border: 2px solid #00FF00; /* 네온 그린 테두리 */ }
+        .scan-line { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: #00FF00; /* 네온 그린 스캔 라인 */ animation: scan 2s cubic-bezier(0.5, 0, 0.5, 1) infinite; box-shadow: 0 0 8px #00FF00; }
+        @keyframes scan { 0% { transform: translateY(0); } 100% { transform: translateY(100px); } }
+        .scan-instruction { position: absolute; bottom: -30px; left: 0; right: 0; text-align: center; color: #00FF00; /* 네온 그린 텍스트 */ font-size: 0.9rem; font-weight: 600; text-shadow: 0 0 5px rgba(0,255,0,0.5); }
+
+        .scan-result { background: var(--light-gray); padding: 2rem; text-align: center; display: none; }
+        .scan-result.active { display: block; }
+        .result-icon { font-size: 3rem; margin-bottom: 1rem; color: #00AA00; } /* 결과 아이콘 색상 */
+        .barcode-number { font-size: 1.1rem; font-weight: 700; color: var(--primary-black); margin-bottom: 0.5rem; font-family: 'Roboto Mono', monospace; }
+        .product-found { font-size: 1rem; color: var(--accent-gray); font-weight: 500; margin-bottom: 1.5rem; }
+        .scan-again-btn {
+            padding: 0.8rem 1.5rem; background: var(--primary-black); color: var(--primary-white);
+            border: 2px solid var(--primary-black); border-radius: 0; /* 각진 모서리 */
+            font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease-out;
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+        }
+        .scan-again-btn:hover { background-color: var(--accent-gray); color: var(--primary-white); box-shadow: 4px 4px 0px rgba(0,0,0,0.2); }
+
+        .manual-input { padding: 1.5rem; background: var(--light-gray); border-top: 1px solid var(--border-color); }
+        .manual-text { font-size: 0.85rem; color: var(--accent-gray); text-align: center; margin-bottom: 0.8rem; font-weight: 500; }
+        .barcode-input {
+            width: 100%; padding: 0.8rem 1rem; border: 2px solid var(--primary-black); border-radius: 0; /* 각진 모서리 */
+            font-size: 1rem; font-family: 'Roboto Mono', monospace; text-align: center; margin-bottom: 0.8rem; outline: none;
+            background-color: var(--primary-white); transition: all 0.2s ease-out;
+            box-shadow: inset 2px 2px 0px rgba(0,0,0,0.1);
+        }
+        .barcode-input:focus { border-color: var(--primary-black); background-color: var(--primary-white); box-shadow: inset 2px 2px 0px rgba(0,0,0,0.1), 0 0 0 3px var(--focus-ring); }
+        .search-barcode-btn {
+            width: 100%; padding: 0.9rem; background: var(--primary-black); color: var(--primary-white);
+            border: 2px solid var(--primary-black); border-radius: 0; /* 각진 모서리 */
+            font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease-out;
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+        }
+        .search-barcode-btn:hover { background-color: var(--accent-gray); color: var(--primary-white); box-shadow: 4px 4px 0px rgba(0,0,0,0.2); }
+
+        /* --- Utility & Feedback --- */
+        .loading { text-align: center; padding: 3rem; color: var(--accent-gray); font-weight: 500; font-size: 1rem; }
+        .spinner {
+            width: 36px; height: 36px; border: 3px solid var(--border-color);
+            border-top-color: var(--primary-black); border-radius: 0; /* 각진 스피너 */
+            animation: spin 0.8s linear infinite; margin: 0 auto 1rem;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .toast {
+            position: fixed; bottom: 2.5rem; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--primary-black); color: var(--primary-white); padding: 0.8rem 1.2rem;
+            border-radius: 0; /* 각진 모서리 */
+            font-size: 0.9rem; z-index: 5000; opacity: 0; transition: all 0.3s ease-out;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.2);
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        .no-results { text-align: center; padding: 4rem 1.5rem; color: var(--accent-gray); font-weight: 500; font-size: 1rem; }
+        .no-results-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+
+        /* 모바일 기기에서의 입력 필드 확대 방지 */
+        @media (max-width: 600px) {
+            input[type="text"], input[type="number"] {
+                font-size: 16px; /* 줌 방지를 위해 최소 16px */
+            }
+            .search-option { padding: 1.2rem; }
+            .option-icon { width: 3rem; height: 3rem; font-size: 1.5rem; }
+            .option-title { font-size: 1rem; }
+            .option-desc { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splash">
+        <div class="splash-logo">🛍️</div>
+        <div class="splash-title">KOKO</div>
+    </div>
+
+    <div class="home-screen">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">🛍️</div>
+                <div class="logo-text">KOKO</div>
+            </div>
+            <button class="lang-btn" onclick="toggleLanguage()">
+                <span id="langFlag">🇰🇷</span>
+                <span id="langCode">KR</span>
+            </button>
+        </div>
+
+        <div class="main-content">
+            <div class="welcome-text">
+                <h1>한국 제품을 쉽게 찾아보세요</h1>
+                <p>검색 방법을 선택하세요</p>
+            </div>
+
+            <div class="search-options">
+                <div class="search-option" onclick="openTextSearch()">
+                    <div class="option-icon">🔍</div>
+                    <div class="option-info">
+                        <div class="option-title">상품명 검색</div>
+                        <div class="option-desc">이름으로 제품 정보를 찾아보세요.</div>
+                    </div>
+                </div>
+
+                <div class="search-option" onclick="openBarcodeScanner()">
+                    <div class="option-icon">📊</div>
+                    <div class="option-info">
+                        <div class="option-title">바코드 스캔</div>
+                        <div class="option-desc">제품 바코드를 스캔하여 바로 검색합니다.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-slide-up" id="searchResultsPage">
+        <div class="page-header">
+            <button class="back-btn" onclick="closeSearchResults()">←</button>
+            <input type="text" class="search-input" id="searchInput" placeholder="상품명을 입력하세요">
+        </div>
+        <div class="results-container" id="resultsContainer"></div>
+    </div>
+
+    <div class="page-slide-right" id="detailPage">
+        <div class="page-header">
+            <button class="back-btn" onclick="closeDetail()">←</button>
+            <div class="header-title">상품 상세</div>
+        </div>
+        <div class="detail-hero" id="detailHero"></div>
+        <div class="detail-content" id="detailContent"></div>
+    </div>
+
+    <div class="scanner-modal" id="scannerModal">
+        <div class="barcode-modal-content">
+            <div class="barcode-header">
+                <div class="scan-title">바코드 스캔</div>
+                <button class="close-scan-btn" onclick="closeScanner()">✕</button>
+            </div>
+            <div class="scanner-container">
+                <div id="scanner-viewport">
+                    <div class="scan-overlay">
+                        <div class="scan-guide">
+                            <div class="scan-line"></div>
+                        </div>
+                        <div class="scan-instruction">바코드를 화면 중앙에 맞춰주세요</div>
+                    </div>
+                </div>
+                <div class="scan-result" id="scanResult">
+                    <div class="result-icon">✅</div>
+                    <div class="barcode-number" id="barcodeNumber"></div>
+                    <div class="product-found" id="productFound"></div>
+                    <button class="scan-again-btn" onclick="restartScanning()">다시 스캔</button>
+                </div>
+            </div>
+            <div class="manual-input">
+                <div class="manual-text">또는 바코드 번호 직접 입력</div>
+                <input type="text" class="barcode-input" id="manualBarcode" placeholder="8801234567890">
+                <button class="search-barcode-btn" onclick="searchByManualBarcode()">검색</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+<script>
+    const FOOD_API_KEY = 'c320de96f22d4183bd13'; // 식품안전나라 API 키
+    const FOOD_API_BASE = 'https://openapi.foodsafetykorea.go.kr/api';
+    const SERVICE_ID = 'C005'; // 식품영양성분 API 서비스 ID
+    
+    // 🚨 실제 발급받은 Google Cloud Translation API 키로 교체해야 합니다. (선택 사항)
+    // 번역 기능은 이 키가 없으면 동작하지 않습니다.
+    const TRANSLATE_API_KEY = 'YOUR_GOOGLE_CLOUD_TRANSLATE_API_KEY'; 
+    
+    const PROXY_URL = 'https://api.allorigins.win/raw?url='; // CORS 우회를 위한 프록시
+    let currentLang = 'ko'; // 현재 언어 설정 (기본 한국어)
+    let currentProduct = null; // 현재 상세 보기 중인 제품 정보
+
+    // 다국어 번역 텍스트
+    const translations = {
+        'ko': {
+            welcomeTitle: "한국 제품을 쉽게 찾아보세요", welcomeSubtitle: "검색 방법을 선택하세요",
+            searchName: "상품명 검색", searchNameDesc: "이름으로 제품 정보를 찾아보세요.",
+            scanBarcode: "바코드 스캔", scanBarcodeDesc: "제품 바코드를 스캔하여 바로 검색합니다.",
+            searchInputPlaceholder: "상품명을 입력하세요", detailTitle: "상품 상세",
+            scanModalTitle: "바코드 스캔", scanInstruction: "바코드를 화면 중앙에 맞춰주세요",
+            manualInputText: "또는 바코드 번호 직접 입력", manualSearchBtn: "검색",
+            productFoundMsg: "찾았습니다!", productNotFoundMsg: "제품을 찾을 수 없습니다.",
+            searchErrorMsg: "오류가 발생했습니다", loadingMsg: "정보 로딩 중...", searchingMsg: "검색 중...",
+            scanAgain: "다시 스캔", searchingForProduct: "제품 검색 중...",
+            infoCompany: "제조사", infoExpiry: "소비기한", infoBarcode: "바코드", infoReportNo: "신고번호",
+            sectionCompanyInfo: "제조사 정보",
+            apiErrorToast: "번역 기능을 사용하려면 Google Cloud API 키가 필요합니다."
+        },
+        'en': {
+            welcomeTitle: "Find Korean products with ease", welcomeSubtitle: "Choose your search method below.",
+            searchName: "Search by Name", searchNameDesc: "Look up product information by its name.",
+            scanBarcode: "Scan Barcode", scanBarcodeDesc: "Scan product barcode for instant search.",
+            searchInputPlaceholder: "Enter product name", detailTitle: "Product Details",
+            scanModalTitle: "Scan Barcode", scanInstruction: "Align barcode within the frame",
+            manualInputText: "Or enter barcode number manually", manualSearchBtn: "Search",
+            productFoundMsg: "Found!", productNotFoundMsg: "Could not find product.",
+            searchErrorMsg: "An error occurred", loadingMsg: "Loading details...", searchingMsg: "Searching...",
+            scanAgain: "Scan Again", searchingForProduct: "Searching for product...",
+            infoCompany: "Company", infoExpiry: "Shelf Life", infoBarcode: "Barcode", infoReportNo: "Report No.",
+            sectionCompanyInfo: "Company Information",
+            apiErrorToast: "Google Cloud API key is required for translation features."
+        },
+        'ja': {
+            welcomeTitle: "韓国製品を簡単に見つけよう", welcomeSubtitle: "検索方法を選択してください。",
+            searchName: "商品名で検索", searchNameDesc: "名前で製品情報を検索します。",
+            scanBarcode: "バーコードをスキャン", scanBarcodeDesc: "製品のバーコードをスキャンしてすぐに検索します。",
+            searchInputPlaceholder: "商品名を入力してください", detailTitle: "商品詳細",
+            scanModalTitle: "バーコードスキャン", scanInstruction: "バーコードを枠に合わせてください",
+            manualInputText: "またはバーコード番号を直接入力", manualSearchBtn: "検索",
+            productFoundMsg: "見つかりました！", productNotFoundMsg: "製品が見つかりません。",
+            searchErrorMsg: "エラーが発生しました", loadingMsg: "情報を読み込み中...", searchingMsg: "検索中...",
+            scanAgain: "再スキャン", searchingForProduct: "製品を検索中...",
+            infoCompany: "製造会社", infoExpiry: "消費期限", infoBarcode: "バーコード", infoReportNo: "届出番号",
+            sectionCompanyInfo: "製造会社情報",
+            apiErrorToast: "翻訳機能にはGoogle Cloud APIキーが必要です。"
+        }
+    };
+    
+    // 현재 선택된 언어에 따라 UI 텍스트 업데이트
+    function applyTranslations(lang) {
+        const t = translations[lang];
+        document.querySelector('.welcome-text h1').textContent = t.welcomeTitle;
+        document.querySelector('.welcome-text p').textContent = t.welcomeSubtitle;
+        document.querySelector('.search-option:nth-child(1) .option-title').textContent = t.searchName;
+        document.querySelector('.search-option:nth-child(1) .option-desc').textContent = t.searchNameDesc;
+        document.querySelector('.search-option:nth-child(2) .option-title').textContent = t.scanBarcode;
+        document.querySelector('.search-option:nth-child(2) .option-desc').textContent = t.scanBarcodeDesc;
+        document.getElementById('searchInput').placeholder = t.searchInputPlaceholder;
+        document.querySelector('#detailPage .header-title').textContent = t.detailTitle;
+        document.querySelector('.scan-title').textContent = t.scanModalTitle;
+        document.querySelector('.scan-instruction').textContent = t.scanInstruction;
+        document.querySelector('.manual-text').textContent = t.manualInputText;
+        document.querySelector('.search-barcode-btn').textContent = t.manualSearchBtn;
+        document.querySelector('.scan-again-btn').textContent = t.scanAgain;
+    }
+
+    // --- 초기화 및 UI 함수 ---
+    document.addEventListener('DOMContentLoaded', function() {
+        // 스플래시 화면 제어
+        setTimeout(() => {
+            document.getElementById('splash').classList.add('fade-out');
+            setTimeout(() => document.getElementById('splash').style.display = 'none', 500); // 더 빠르게 전환
+        }, 1500);
+        applyTranslations(currentLang);
+    });
+
+    // 언어 전환
+    function toggleLanguage() {
+        const langs = ['ko', 'en', 'ja'];
+        const flags = { ko: '🇰🇷', en: '🇺🇸', ja: '🇯🇵' };
+        const codes = { ko: 'KR', en: 'EN', ja: 'JP' };
+        
+        const idx = langs.indexOf(currentLang);
+        const nextLang = langs[(idx + 1) % langs.length];
+
+        // Google Cloud Translation API 키가 없으면 한국어 외 다른 언어 전환 시 토스트 메시지
+        if (nextLang !== 'ko' && (!TRANSLATE_API_KEY || TRANSLATE_API_KEY === 'YOUR_GOOGLE_CLOUD_TRANSLATE_API_KEY')) {
+            showToast(translations[currentLang].apiErrorToast);
+            return;
+        }
+        
+        currentLang = nextLang;
+        document.getElementById('langFlag').textContent = flags[currentLang];
+        document.getElementById('langCode').textContent = codes[currentLang];
+        applyTranslations(currentLang);
+    }
+
+    // 페이지 열고 닫기
+    function openTextSearch() { document.getElementById('searchResultsPage').classList.add('active'); document.getElementById('searchInput').focus(); }
+    function closeSearchResults() { document.getElementById('searchResultsPage').classList.remove('active'); }
+    function openBarcodeScanner() { document.getElementById('scannerModal').classList.add('active'); document.getElementById('scanResult').classList.remove('active'); startScanning(); }
+    function closeScanner() { stopScanning(); document.getElementById('scannerModal').classList.remove('active'); }
+    function closeDetail() { document.getElementById('detailPage').classList.remove('active'); }
+
+    // 토스트 메시지 표시
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // --- API 및 데이터 처리 ---
+    // Google Cloud Translation API를 이용한 텍스트 번역
+    async function translateText(text, targetLang) {
+        if (targetLang === 'ko' || !text || !TRANSLATE_API_KEY || TRANSLATE_API_KEY === 'YOUR_GOOGLE_CLOUD_TRANSLATE_API_KEY') {
+            return text;
+        }
+        try {
+            const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${TRANSLATE_API_KEY}`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ q: text, target: targetLang, source: 'ko' })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error.message);
+            }
+            const data = await response.json();
+            return data.data?.translations?.[0]?.translatedText || text;
+        } catch (error) {
+            console.error('번역 기능 오류:', error);
+            showToast(`번역 오류: ${error.message}`);
+            throw error;
+        }
+    }
+
+    let searchTimeout;
+    // 검색 입력 필드 이벤트 리스너 (디바운스 적용)
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        const query = e.target.value.trim();
+        if (query.length < 2) { // 2글자 미만일 경우 검색하지 않음
+            document.getElementById('resultsContainer').innerHTML = '';
+            return;
+        }
+        searchTimeout = setTimeout(() => searchProducts(query), 500); // 0.5초 대기 후 검색
+    });
+
+    // 상품명으로 검색
+    async function searchProducts(query) {
+        const container = document.getElementById('resultsContainer');
+        container.innerHTML = `<div class="loading"><div class="spinner"></div>${translations[currentLang].searchingMsg}</div>`;
+        try {
+            const originalUrl = `${FOOD_API_BASE}/${FOOD_API_KEY}/${SERVICE_ID}/json/1/100/PRDLST_NM=${encodeURIComponent(query)}`;
+            const response = await fetch(PROXY_URL + encodeURIComponent(originalUrl)); // 프록시를 통해 API 호출
+            const data = await response.json();
+
+            if (data.C005.RESULT?.CODE === 'INFO-200') { // 검색 결과 없음
+                container.innerHTML = `<div class="no-results"><div class="no-results-icon">😢</div><div>${translations[currentLang].productNotFoundMsg}</div></div>`;
+                return;
+            }
+            if (data.C005.RESULT?.CODE === 'ERROR') { // API 오류
+                throw new Error(data.C005.RESULT.MSG);
+            }
+            
+            if (!data.C005?.row) { // 결과 데이터 형식이 예상과 다를 경우
+                container.innerHTML = `<div class="no-results"><div class="no-results-icon">😢</div><div>${translations[currentLang].productNotFoundMsg}</div></div>`;
+                return;
+            }
+
+            // 검색 결과를 리스트로 표시
+            container.innerHTML = data.C005.row.map(p => `
+                <div class="result-card" onclick='showProductDetail(${JSON.stringify(p).replace(/'/g, "&apos;")})'>
+                    <div class="result-name">${p.PRDLST_NM}</div>
+                    <div class="result-desc">${p.PRDLST_DCNM || '식품'}</div>
+                    <div class="result-company">${p.BSSH_NM || '제조사 정보 없음'}</div>
+                </div>
+            `).join('');
+        } catch (error) {
+            console.error('상품 검색 오류:', error);
+            container.innerHTML = `<div class="no-results">${translations[currentLang].searchErrorMsg}: ${error.message}</div>`;
+        }
+    }
+
+    // 바코드 번호로 상품 검색
+    async function findProductByBarcode(barcode) {
+        document.getElementById('barcodeNumber').textContent = barcode;
+        document.getElementById('productFound').textContent = translations[currentLang].searchingForProduct;
+        document.getElementById('scanResult').classList.add('active'); // 스캔 결과 UI 활성화
+
+        try {
+            const originalUrl = `${FOOD_API_BASE}/${FOOD_API_KEY}/${SERVICE_ID}/json/1/10/BAR_CD=${barcode}`;
+            const response = await fetch(PROXY_URL + encodeURIComponent(originalUrl));
+            const data = await response.json();
+
+            if (data.C005.RESULT?.CODE === 'INFO-200' || !data.C005?.row) {
+                document.getElementById('productFound').textContent = translations[currentLang].productNotFoundMsg;
+                return;
+            }
+            if (data.C005.RESULT?.CODE === 'ERROR') {
+                throw new Error(data.C005.RESULT.MSG);
+            }
+            
+            const product = data.C005.row[0];
+            const productName = await translateText(product.PRDLST_NM, currentLang).catch(() => product.PRDLST_NM);
+            document.getElementById('productFound').textContent = `${productName} ${translations[currentLang].productFoundMsg}`;
+            
+            // 1.5초 후 스캐너 닫고 상세 페이지 표시
+            setTimeout(() => { closeScanner(); showProductDetail(product); }, 1500);
+        } catch (error) {
+            console.error('바코드 검색 오류:', error);
+            document.getElementById('productFound').textContent = `${translations[currentLang].searchErrorMsg}: ${error.message}`;
+        }
+    }
+
+    // 상품 상세 정보 표시
+    async function showProductDetail(product) {
+        currentProduct = product;
+        const detailPage = document.getElementById('detailPage');
+        const detailHero = document.getElementById('detailHero');
+        const detailContent = document.getElementById('detailContent');
+        
+        detailHero.innerHTML = ''; // 기존 내용 초기화
+        detailContent.innerHTML = `<div class="loading"><div class="spinner"></div>${translations[currentLang].loadingMsg}</div>`;
+        detailPage.classList.add('active'); // 상세 페이지 활성화
+
+        try {
+            const t = translations[currentLang];
+            // 제품명, 분류명, 제조사명, 주소를 현재 언어로 번역
+            const [pName, pDesc, pCompany, pAddr] = await Promise.all([
+                translateText(product.PRDLST_NM, currentLang),
+                translateText(product.PRDLST_DCNM, currentLang),
+                translateText(product.BSSH_NM, currentLang),
+                translateText(product.SITE_ADDR, currentLang)
+            ]);
+
+            detailHero.innerHTML = `
+                <div class="detail-title">${pName}</div>
+                <div class="detail-subtitle">${pDesc || '식품'}</div>
+            `;
+            detailContent.innerHTML = `
+                <div class="info-grid">
+                    <div class="info-item"><div class="info-label">${t.infoCompany}</div><div class="info-value">${pCompany || '-'}</div></div>
+                    <div class="info-item"><div class="info-label">${t.infoExpiry}</div><div class="info-value">${product.POG_DAYCNT || '-'}</div></div>
+                    <div class="info-item"><div class="info-label">${t.infoBarcode}</div><div class="info-value">${product.BAR_CD || '-'}</div></div>
+                    <div class="info-item"><div class="info-label">${t.infoReportNo}</div><div class="info-value">${product.PRDLST_REPORT_NO || '-'}</div></div>
+                </div>
+                <div class="section-title">${t.sectionCompanyInfo}</div>
+                <div class="section-text">${pAddr || '주소 정보 없음'}</div>
+            `;
+        } catch (error) {
+            console.error('상세 정보 로딩 오류:', error);
+            detailHero.innerHTML = `<div class="detail-title">오류</div>`;
+            detailContent.innerHTML = `
+                <div class="no-results" style="padding: 2rem 0;">
+                    <div class="no-results-icon">⚠️</div>
+                    <h3>상세 정보를 불러오는 중 오류 발생</h3>
+                    <p style="font-size: 0.8rem; color: #c0392b; background: #fbeae5; padding: 0.8rem; border-radius: 0; font-family: 'Roboto Mono', monospace; word-break: break-all; margin-top: 1rem;">${error.message}</p>
+                    ${(TRANSLATE_API_KEY === 'YOUR_GOOGLE_CLOUD_TRANSLATE_API_KEY' && currentLang !== 'ko') ? 
+                        `<p style="margin-top: 1rem; font-size: 0.9rem; color: var(--accent-gray);">Google Cloud API 키를 올바르게 설정했는지 확인해 주세요.</p>` : ''}
+                </div>`;
+        }
+    }
+
+    // --- 바코드 스캐너 기능 ---
+    let isScanning = false, lastBarcode = null, lastDetectionTime = 0; // 스캔 상태 변수
+    function startScanning() {
+        if (isScanning) return; // 이미 스캔 중이면 중복 실행 방지
+
+        // Quagga.js 초기화
+        Quagga.init({
+            inputStream: {
+                name: "Live",
+                type: "LiveStream",
+                target: document.querySelector('#scanner-viewport'), // 스캐너 뷰포트 지정
+                constraints: {
+                    width: 640,
+                    height: 480,
+                    facingMode: "environment" // 후면 카메라 사용
+                },
+            },
+            locator: {
+                patchSize: "medium",
+                halfSample: true
+            },
+            numOfWorkers: navigator.hardwareConcurrency || 4, // 워커 수 최적화
+            decoder: {
+                readers: ["ean_reader"] // EAN (유럽 상품 번호) 바코드 리더 사용
+            },
+            locate: true // 바코드 위치 감지 활성화
+        }, (err) => {
+            if (err) {
+                console.error('Quagga 초기화 오류:', err);
+                showToast('카메라를 사용할 수 없습니다.');
+                closeScanner();
+                return;
+            }
+            Quagga.start(); // 스캐너 시작
+            isScanning = true;
+        });
+        Quagga.onDetected(onBarcodeDetected); // 바코드 감지 이벤트 리스너 등록
+    }
+
+    // 스캐너 중지
+    function stopScanning() {
+        if (isScanning) {
+            Quagga.offDetected(onBarcodeDetected); // 이벤트 리스너 해제
+            Quagga.stop(); // 스캐너 중지
+            isScanning = false;
+        }
+    }
+
+    // 바코드 감지 시 호출되는 함수
+    function onBarcodeDetected(result) {
+        const barcode = result.codeResult.code;
+        const now = Date.now();
+
+        // 동일한 바코드가 짧은 시간 내에 여러 번 감지되는 것을 방지 (디바운싱)
+        if (barcode === lastBarcode && (now - lastDetectionTime < 3000)) {
+            return;
+        }
+
+        lastBarcode = barcode;
+        lastDetectionTime = now;
+
+        stopScanning(); // 바코드를 찾으면 스캐너 중지
+        findProductByBarcode(barcode); // 검색 함수 호출
+    }
+
+    // 스캔 다시 시작
+    function restartScanning() {
+        document.getElementById('scanResult').classList.remove('active'); // 스캔 결과 UI 숨기기
+        startScanning(); // 스캐너 다시 시작
+    }
+
+    // 수동 바코드 입력 후 검색
+    function searchByManualBarcode() {
+        const barcode = document.getElementById('manualBarcode').value.trim();
+        if (barcode.length < 8 || !/^\d+$/.test(barcode)) { // 최소 8자리 숫자 확인
+            showToast('올바른 바코드 번호를 입력해주세요.');
+            return;
+        }
+        stopScanning(); // 스캐너 중지
+        findProductByBarcode(barcode); // 검색 함수 호출
+    }
+</script>
+</body>
+</html>
