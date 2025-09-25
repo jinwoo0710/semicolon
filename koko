@@ -110,9 +110,15 @@
             color: var(--primary-black);
             border-radius: 0;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem;
             flex-shrink: 0;
             border: 1px solid var(--border-color);
+            padding: 0.5rem; /* Add padding for the image */
+        }
+        /* [NEW] Style for the image inside the icon container */
+        .option-icon img {
+            width: 50px;
+            height: 100px;
+            object-fit: contain;
         }
         .option-info { flex: 1; text-align: left; }
         .option-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; letter-spacing: -0.01em; }
@@ -123,10 +129,11 @@
             position: fixed; inset: 0; background: var(--primary-white); z-index: 1000;
             transition: transform 0.3s cubic-bezier(0.7, 0, 0.3, 1);
             box-shadow: none;
+            overflow-y: auto; 
         }
         .page-slide-up { transform: translateY(100%); }
         .page-slide-up.active { transform: translateY(0); }
-        .page-slide-right { transform: translateX(100%); overflow-y: auto; }
+        .page-slide-right { transform: translateX(100%); }
         .page-slide-right.active { transform: translateX(0); }
 
         .page-header {
@@ -226,7 +233,7 @@
         .scan-overlay { position: absolute; inset: 0; pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .scan-guide { width: 70%; max-width: 300px; height: 120px; position: relative; border: 2px solid #00FF00; }
         .scan-line { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: #00FF00; animation: scan 2s cubic-bezier(0.5, 0, 0.5, 1) infinite; box-shadow: 0 0 8px #00FF00; }
-        @keyframes scan { 0% { transform: translateY(0); } 100% { transform: translateY(118px); } } /* Adjusted for guide height */
+        @keyframes scan { 0% { transform: translateY(0); } 100% { transform: translateY(118px); } }
         .scan-instruction { position: absolute; bottom: -30px; left: 0; right: 0; text-align: center; color: #00FF00; font-size: 0.9rem; font-weight: 600; text-shadow: 0 0 5px rgba(0,255,0,0.5); }
 
         .scan-result { background: var(--light-gray); padding: 2rem; text-align: center; display: none; }
@@ -312,7 +319,9 @@
 
             <div class="search-options">
                 <div class="search-option" onclick="openTextSearch()">
-                    <div class="option-icon">🔍</div>
+                    <div class="option-icon">
+                        <img src="static/image/text.png" alt="상품명 검색 아이콘">
+                    </div>
                     <div class="option-info">
                         <div class="option-title" id="searchByName">상품명 검색</div>
                         <div class="option-desc" id="searchByNameDesc">이름으로 제품 정보를 찾아보세요.</div>
@@ -320,7 +329,9 @@
                 </div>
 
                 <div class="search-option" onclick="openBarcodeScanner()">
-                    <div class="option-icon">📊</div>
+                    <div class="option-icon">
+                        <img src="static/image/barcode.png" alt="바코드 스캔 아이콘">
+                    </div>
                     <div class="option-info">
                         <div class="option-title" id="scanBarcode">바코드 스캔</div>
                         <div class="option-desc" id="scanBarcodeDesc">제품 바코드를 스캔하여 바로 검색합니다.</div>
@@ -385,7 +396,6 @@
     const FOOD_API_BASE = 'https://openapi.foodsafetykorea.go.kr/api';
     const SERVICE_ID = 'C005';
     
-    // 🚨 Replace with your actual Google Cloud Translation API key to enable translation.
     const TRANSLATE_API_KEY = 'AIzaSyArr1P7f6JuAL8Xz8ECiHi8WkfbNRn4Z7I'; 
     
     const PROXY_URL = 'https://api.allorigins.win/raw?url=';
@@ -446,7 +456,6 @@
         }
     };
     
-    // A single function to update all UI text based on the current language
     function applyTranslations(lang) {
         const t = translations[lang];
         document.getElementById('appTitle').textContent = t.appTitle;
@@ -464,13 +473,12 @@
         document.getElementById('scanAgainBtn').textContent = t.scanAgainBtn;
     }
 
-    // --- Initialization and UI Functions ---
     document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             document.getElementById('splash').classList.add('fade-out');
             setTimeout(() => document.getElementById('splash').style.display = 'none', 500);
         }, 1500);
-        applyTranslations(currentLang); // Apply initial language
+        applyTranslations(currentLang);
     });
 
     function toggleLanguage() {
@@ -481,7 +489,6 @@
         const idx = langs.indexOf(currentLang);
         const nextLang = langs[(idx + 1) % langs.length];
 
-        // Corrected API key check
         if (nextLang !== 'ko' && (!TRANSLATE_API_KEY || TRANSLATE_API_KEY === 'YOUR_API_KEY_HERE')) {
             showToast(translations[currentLang].translationNeeded);
             return;
@@ -506,7 +513,6 @@
         setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-    // --- API and Data Handling ---
     async function translateText(text, targetLang) {
         if (targetLang === 'ko' || !text || !TRANSLATE_API_KEY || TRANSLATE_API_KEY === 'YOUR_API_KEY_HERE') {
             return text;
@@ -557,7 +563,27 @@
                 throw new Error(data.C005.RESULT.MSG);
             }
             
-            container.innerHTML = data.C005.row.map(p => `
+            const results = data.C005.row;
+
+            const calculateScore = (productName, query) => {
+                const pName = productName.toLowerCase().trim();
+                const q = query.toLowerCase().trim();
+                if (pName === q) return 0;
+                if (pName.startsWith(q)) return 1;
+                if (pName.includes(q)) return 2;
+                return 3;
+            };
+
+            results.sort((a, b) => {
+                const scoreA = calculateScore(a.PRDLST_NM, query);
+                const scoreB = calculateScore(b.PRDLST_NM, query);
+                if (scoreA !== scoreB) {
+                    return scoreA - scoreB;
+                }
+                return a.PRDLST_NM.length - b.PRDLST_NM.length;
+            });
+            
+            container.innerHTML = results.map(p => `
                 <div class="result-card" onclick='showProductDetail(${JSON.stringify(p).replace(/'/g, "&apos;")})'>
                     <div class="result-name">${p.PRDLST_NM}</div>
                     <div class="result-desc">${p.PRDLST_DCNM || '식품'}</div>
@@ -645,7 +671,6 @@
         }
     }
 
-    // --- Barcode Scanner Functions ---
     let isScanning = false, lastBarcode = null, lastDetectionTime = 0;
     function startScanning() {
         if (isScanning) return;
