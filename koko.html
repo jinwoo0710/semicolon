@@ -86,8 +86,8 @@
     <script>
         // --- API & 설정 ---
         const FOOD_API_KEY = 'c320de96f22d4183bd13';
-        const TRANSLATE_API_KEY = 'AIzaSyArr1P7f6JuAL8Xz8ECiHi8WkfbNRn4Z7I'; // 🚨 Google 번역 API 키 입력
-        const GEMINI_API_KEY = 'AIzaSyDrsbT0bzRyi1WOA3byzJI8VOIY2NpYa6Y'; // 🚨 Gemini API 키 입력
+        const TRANSLATE_API_KEY = 'AIzaSyArr1P7f6JuAL8Xz8ECiHi8WkfbNRn4Z7I';
+        const GEMINI_API_KEY = 'AIzaSyDrsbT0bzRyi1WOA3byzJI8VOIY2NpYa6Y';
         const PROXY_URL = 'https://corsproxy.io/?';
         const FOOD_API_BASE = `https://openapi.foodsafetykorea.go.kr/api/${FOOD_API_KEY}/C005/json`;
 
@@ -99,9 +99,9 @@
 
         // --- 다국어 텍스트 ---
         const translations = {
-            ko: { appTitle: '한국 제품을<br>쉽게 찾아보세요', appSubtitle: '검색 방법을 선택하세요', searchByName: '상품명 검색', searchByNameDesc: '이름이나 브랜드로 제품 찾기', scanBarcode: '바코드 스캔', scanBarcodeDesc: '바코드로 정확하게 제품 찾기', searchPlaceholder: '상품명을 입력하세요...', productDetail: '상품 상세 정보', manufacturer: '제조사', expiry: '소비기한', barcode: '바코드', reportNumber: '품목보고번호', searching: '검색 중...', noResults: '검색 결과가 없습니다', loadingInfo: '정보를 불러오는 중...', errorLoading: '정보를 불러오는 중 오류 발생', barcodeTitle: '바코드 스캐너', search: '검색', product_found: '상품을 찾았습니다!', product_not_found: '상품을 찾을 수 없습니다.', camera_error: '카메라를 사용할 수 없습니다.', invalid_barcode: '유효한 바코드 번호를 입력해주세요.', translation_needed: '번역을 위해 API 키가 필요합니다.', preparing_dictionary: '사전 데이터 준비 중...', gemini_searching: '인터넷 크롤링 중...' },
-            en: { appTitle: 'Find Korean<br>Products Easily', appSubtitle: 'Choose your search method', searchByName: 'Search by Name', searchByNameDesc: 'Find products using their name', scanBarcode: 'Scan Barcode', scanBarcodeDesc: 'Find products with their barcode', searchPlaceholder: 'Enter product name...', productDetail: 'Product Details', manufacturer: 'Manufacturer', expiry: 'Shelf Life', barcode: 'Barcode', reportNumber: 'Report No.', searching: 'Searching...', noResults: 'No search results found', loadingInfo: 'Loading information...', errorLoading: 'Error loading details', barcodeTitle: 'Barcode Scanner', search: 'Search', product_found: 'Product Found!', product_not_found: 'Product not found.', camera_error: 'Could not access camera.', invalid_barcode: 'Please enter a valid barcode.', translation_needed: 'API key is required for translation.', preparing_dictionary: 'Preparing dictionary...', gemini_searching: 'Crawling the Internet...' },
-            ja: { appTitle: '韓国製品を<br>簡単に見つけよう', appSubtitle: '検索方法を選んでください', searchByName: '商品名で検索', searchByNameDesc: '商品名で製品を検索', scanBarcode: 'バーコードをスキャン', scanBarcodeDesc: 'バーコードで製品を検索', searchPlaceholder: '商品名を入力...', productDetail: '商品詳細', manufacturer: '製造社', expiry: '消費期限', barcode: 'バーコード', reportNumber: '品目報告番号', searching: '検索中...', noResults: '検索結果がありません', loadingInfo: '情報を読み込み中...', errorLoading: 'エラーが発生しました', barcodeTitle: 'バーコードスキャナー', search: '検索', product_found: '製品が見つかりました！', product_not_found: '製品が見つかりません', camera_error: 'カメラにアクセスできません', invalid_barcode: '有効なバーコードを入力してください', translation_needed: '翻訳にはAPIキーが必要です', preparing_dictionary: '辞書を準備しています...', gemini_searching: 'インターネットクロール中...' }
+            ko: { appTitle: '한국 제품을<br>쉽게 찾아보세요', appSubtitle: '검색 방법을 선택하세요', searchByName: '상품명 검색', searchByNameDesc: '이름이나 브랜드로 제품 찾기', scanBarcode: '바코드 스캔', scanBarcodeDesc: '바코드로 정확하게 제품 찾기', searchPlaceholder: '상품명을 입력하세요...', productDetail: '상품 상세 정보', manufacturer: '제조사', expiry: '소비기한', barcode: '바코드', reportNumber: '품목보고번호', searching: '검색 중...', noResults: '검색 결과가 없습니다', loadingInfo: '정보를 불러오는 중...', errorLoading: '정보를 불러오는 중 오류 발생', barcodeTitle: '바코드 스캐너', search: '검색', product_found: '상품을 찾았습니다!', product_not_found: '상품을 찾을 수 없습니다.', camera_error: '카메라를 사용할 수 없습니다.', invalid_barcode: '유효한 바코드 번호를 입력해주세요.', translation_needed: '번역을 위해 API 키가 필요합니다.', preparing_dictionary: '사전 데이터 준비 중...', gemini_searching: '인터넷 크롤링 중...', gemini_result_desc: '인터넷 검색 결과', translating: '번역 중...' },
+            en: { appTitle: 'Find Korean<br>Products Easily', appSubtitle: 'Choose your search method', searchByName: 'Search by Name', searchByNameDesc: 'Find products using their name', scanBarcode: 'Scan Barcode', scanBarcodeDesc: 'Find products with their barcode', searchPlaceholder: 'Enter product name...', productDetail: 'Product Details', manufacturer: 'Manufacturer', expiry: 'Shelf Life', barcode: 'Barcode', reportNumber: 'Report No.', searching: 'Searching...', noResults: 'No search results found', loadingInfo: 'Loading information...', errorLoading: 'Error loading details', barcodeTitle: 'Barcode Scanner', search: 'Search', product_found: 'Product Found!', product_not_found: 'Product not found.', camera_error: 'Could not access camera.', invalid_barcode: 'Please enter a valid barcode.', translation_needed: 'API key is required for translation.', preparing_dictionary: 'Preparing dictionary...', gemini_searching: 'Crawling the Internet...', gemini_result_desc: 'Web Search Result', translating: 'Translating...' },
+            ja: { appTitle: '韓国製品を<br>簡単に見つけよう', appSubtitle: '検索方法を選んでください', searchByName: '商品名で検索', searchByNameDesc: '商品名で製品を検索', scanBarcode: 'バーコードをスキャン', scanBarcodeDesc: 'バーコードで製品を検索', searchPlaceholder: '商品名を入力...', productDetail: '商品詳細', manufacturer: '製造社', expiry: '消費期限', barcode: 'バー코드', reportNumber: '品目報告番号', searching: '検索中...', noResults: '検索結果がありません', loadingInfo: '情報を読み込み中...', errorLoading: 'エラーが発生しました', barcodeTitle: 'バーコードスキャナー', search: '検索', product_found: '製品が見つかりました！', product_not_found: '製品が見つかりません', camera_error: 'カメラにアクセスできません', invalid_barcode: '有効なバーコードを入力してください', translation_needed: '翻訳にはAPIキーが必要です', preparing_dictionary: '辞書を準備しています...', gemini_searching: 'インターネットクロール中...', gemini_result_desc: 'Web検索結果', translating: '翻訳中...'}
         };
         const getText = (key) => translations[currentLang][key] || key;
 
@@ -255,7 +255,6 @@
             return product['제조사'] || product['바코드번호'] ? product : null;
         }
         
-        // ✅ [수정] 1단계: 검색어로 연관 상품 '목록'을 가져오는 함수
         async function searchWithGeminiForList(query) {
             const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
             const prompt = `그럼 이제 검색엔진처럼 작동해봐. 예를들어 내가 진라면을 검색하면 너는 진라면 매운맛, 진라면 순한맛, 진라면 중간맛 등등 처럼 검색어 연관순으로 대답을 하는거야 알겠지? 다른 대답은 필요없고 제품 리스트만 있으면 돼. 검색어가 '${query}'일떄 리스트출력해줘`;
@@ -273,18 +272,16 @@
                     throw new Error("인터넷 크롤링으로부터 유효한 답변을 받지 못했습니다.");
                 }
                 const rawText = data.candidates[0].content.parts[0].text;
-                // 응답 텍스트에서 앞뒤 공백 및 별표/하이픈 기호를 모두 제거
                 return rawText.split('\n')
                     .map(name => name.replace(/^[\s*-]+/, '').trim())
                     .filter(name => name.length > 0);
             } catch (error) {
-                console.error("G인터넷 크롤링 목록 검색 실패:", error);
+                console.error("인터넷 크롤링 실패:", error);
                 showToast("연관 상품 목록을 가져오는데 실패했습니다.");
                 return [];
             }
         }
 
-        // ✅ [수정] 2단계: 상품 이름으로 '상세 정보'를 가져오는 함수
         async function getGeminiProductDetails(productName) {
             const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
             const prompt = `'${productName}'(이)라는 한국 상품의 제조사, 소비기한, 바코드번호, 품목보고번호 정보를 알려줘. 정보가 없다면 "정보 없음"으로 표시하고, 다른 설명 없이 항목과 값만 "항목: 값" 형식으로 나열해줘.`;
@@ -304,13 +301,12 @@
                 const rawText = data.candidates[0].content.parts[0].text;
                 return parseGeminiResponse(rawText, productName);
             } catch (error) {
-                console.error("인터넷 크롤링 상세 정보 검색 실패:", error);
+                console.error("인터넷 크롤링 실패:", error);
                 showToast("제품 상세 정보를 가져오는데 실패했습니다.");
                 return null;
             }
         }
         
-        // ✅ [수정] searchProducts 함수 (onclick 버그 수정)
         async function searchProducts(query) {
             if (!searchCache) await fetchAllProducts();
             const container = document.getElementById('resultsContainer');
@@ -326,18 +322,28 @@
 
             if (results.length === 0) {
                 container.innerHTML = `<div class="loading"><div class="spinner"></div>${getText('internet crawling')}</div>`;
-                const geminiList = await searchWithGeminiForList(query);
+                
+                const originalKoreanList = await searchWithGeminiForList(query);
 
-                if (geminiList && geminiList.length > 0) {
-                    container.innerHTML = geminiList.map(productName => {
-                        // 큰따옴표와 작은따옴표를 모두 안전하게 처리하도록 수정
-                        const safeProductName = productName.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+                if (originalKoreanList && originalKoreanList.length > 0) {
+                    let displayList = originalKoreanList;
+                    
+                    if (currentLang !== 'ko') {
+                        showToast(getText('translating'));
+                        displayList = await translate(originalKoreanList, 'ko', currentLang, true);
+                    }
+
+                    container.innerHTML = displayList.map((productNameToDisplay, index) => {
+                        const originalProductName = originalKoreanList[index];
+                        const safeOriginalProductName = originalProductName.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+                        
                         return `
-                        <div class="result-card" onclick="showProductDetail('${safeProductName}')">
-                            <h3 class="result-name">${productName}</h3>
-                            <p class="result-desc">인터넷 검색 결과</p>
+                        <div class="result-card" onclick="showProductDetail('${safeOriginalProductName}')">
+                            <h3 class="result-name">${productNameToDisplay}</h3>
+                            <p class="result-desc">${getText('internet crawling_result_desc')}</p>
                         </div>
-                        `}).join('');
+                        `;
+                    }).join('');
                 } else {
                     container.innerHTML = `<div class="no-results">${getText('noResults')}</div>`;
                 }
@@ -349,7 +355,8 @@
                         <h3 class="result-name">${product[productNameKey] || product.PRDLST_NM}</h3>
                         <p class="result-desc">${product[companyNameKey] || product.BSSH_NM}</p>
                     </div>
-                `}).join('');
+                    `;
+                }).join('');
             }
         }
 
@@ -365,7 +372,6 @@
             }
         }
 
-        // ✅ [수정] showProductDetail 함수 (2단계 로직 적용)
         async function showProductDetail(productData) {
             const content = document.getElementById('detailPageContent');
             showPage('detail');
@@ -374,7 +380,6 @@
             let details;
 
             if (typeof productData === 'string') {
-                // HTML 엔티티(&quot;)를 다시 큰따옴표로 변환
                 const productName = productData.replace(/&quot;/g, '"');
                 const geminiDetailsObject = await getGeminiProductDetails(productName);
                 if (geminiDetailsObject) {
@@ -501,4 +506,4 @@
         }
     </script>
 </body>
-</html> 여기있는 프롬프트를 좀 더 좋게 바꿀순 없을까?
+</html>
