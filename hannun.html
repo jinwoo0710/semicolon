@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>KOKO - Korean Product Guide</title>
+    <title>HANNUN</title>
     <link rel="stylesheet" as="style" crossorigin
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
@@ -17,7 +17,8 @@
         @keyframes splashFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .home-screen { min-height: 100vh; padding: 2.5rem 1.5rem; display: flex; flex-direction: column; align-items: center; }
         .header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4rem; }
-        .logo-text { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.03em; }
+        /* ✅ 로고 이미지 스타일 추가 */
+        .logo-image { height: 90px; vertical-align: middle; }
         .lang-btn { padding: 0.6rem 1rem; background: var(--light-gray); border: 1px solid var(--border-color); border-radius: 0; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: none; display: flex; align-items: center; gap: 0.4rem; }
         .main-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 3rem; width: 100%; max-width: 500px; }
         .welcome-text h1 { font-size: clamp(2.2rem, 8vw, 3.2rem); font-weight: 800; line-height: 1.2; letter-spacing: -0.04em; margin-bottom: 0.8rem; }
@@ -34,7 +35,7 @@
         .page-slide-right.active { transform: translateX(0); }
         .page-header { background: var(--primary-white); padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.8rem; border-bottom: 2px solid var(--primary-black); z-index: 100; position: sticky; top: 0; }
         .back-btn { width: 44px; height: 44px; border-radius: 0; background: var(--primary-black); color: var(--primary-white); border: none; font-size: 1.5rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease-out; box-shadow: none; }
-        .header-logo { flex: 1; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; text-align: center; margin-right: 44px; cursor: pointer; transition: opacity 0.2s; }
+        .header-logo { flex: 1; text-align: center; margin-right: 44px; cursor: pointer; transition: opacity 0.2s; }
         .header-logo:hover { opacity: 0.7; }
         .search-input { flex: 1; padding: 0.8rem 1.2rem; border: 2px solid var(--primary-black); border-radius: 0; background: var(--light-gray); font-size: 1rem; outline: none; transition: all 0.2s ease-out; box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.1); }
         .results-container { padding: 0.5rem 1.5rem; }
@@ -75,10 +76,25 @@
 </head>
 
 <body>
-    <div class="splash-screen" id="splash"> <div class="splash-title">KOKO</div> </div>
-    <main class="home-screen" id="home"> <header class="header"> <div class="logo"> <span class="logo-text">KOKO</span> </div> <button class="lang-btn" onclick="toggleLanguage()"> <span id="langFlag">🇰🇷</span> <span id="langCode">KO</span> </button> </header> <div class="main-content"> <div class="welcome-text"> <h1 id="appTitle">한국 제품을<br>쉽게 찾아보세요</h1> <p id="appSubtitle">검색 방법을 선택하세요</p> </div> <div class="search-options"> <div class="search-option" onclick="showPage('searchResults')"> <div class="option-icon"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /> </svg> </div> <div class="option-info"> <h3 class="option-title" id="searchByName">상품명 검색</h3> <p class="option-desc" id="searchByNameDesc">이름이나 브랜드로 제품 찾기</p> </div> </div> <div class="search-option" onclick="openBarcodeScanner()"> <div class="option-icon"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.5A.75.75 0 0 1 4.5 3.75h15a.75.75 0 0 1 .75.75v15a.75.75 0 0 1-.75.75h-15a.75.75 0 0 1-.75-.75v-15ZM8.25 9v6m3-6v6m3-6v6m3-6v6" /> </svg> </div> <div class="option-info"> <h3 class="option-title" id="scanBarcode">바코드 스캔</h3> <p class="option-desc" id="scanBarcodeDesc">바코드로 정확하게 제품 찾기</p> </div> </div> </div> </div> </main>
+    <div class="splash-screen" id="splash"> <div class="splash-title">HANNUN</div> </div>
+    <main class="home-screen" id="home"> 
+        <header class="header"> 
+            <div class="logo"> 
+                <img src="logo.png" alt="HANNUN Logo" class="logo-image">
+            </div> 
+            <button class="lang-btn" onclick="toggleLanguage()"> <span id="langFlag">🇰🇷</span> <span id="langCode">KO</span> </button> 
+        </header> 
+        <div class="main-content"> <div class="welcome-text"> <h1 id="appTitle">한국 제품을<br>쉽게 찾아보세요</h1> <p id="appSubtitle">검색 방법을 선택하세요</p> </div> <div class="search-options"> <div class="search-option" onclick="showPage('searchResults')"> <div class="option-icon"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /> </svg> </div> <div class="option-info"> <h3 class="option-title" id="searchByName">상품명 검색</h3> <p class="option-desc" id="searchByNameDesc">이름이나 브랜드로 제품 찾기</p> </div> </div> <div class="search-option" onclick="openBarcodeScanner()"> <div class="option-icon"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.5A.75.75 0 0 1 4.5 3.75h15a.75.75 0 0 1 .75.75v15a.75.75 0 0 1-.75.75h-15a.75.75 0 0 1-.75-.75v-15ZM8.25 9v6m3-6v6m3-6v6m3-6v6" /> </svg> </div> <div class="option-info"> <h3 class="option-title" id="scanBarcode">바코드 스캔</h3> <p class="option-desc" id="scanBarcodeDesc">바코드로 정확하게 제품 찾기</p> </div> </div> </div> </div> </main>
     <div class="page-slide-right" id="searchResults"> <div class="page-header"> <button class="back-btn" onclick="goBack()">←</button> <input type="text" class="search-input" id="searchInput" placeholder="상품명을 입력하세요..."> </div> <div class="results-container" id="resultsContainer"></div> </div>
-    <div class="page-slide-right" id="detail"> <div class="page-header"> <button class="back-btn" onclick="goBack()">←</button> <div class="header-logo" onclick="goToHome()">KOKO</div> </div> <div id="detailPageContent"></div> </div>
+    <div class="page-slide-right" id="detail"> 
+        <div class="page-header"> 
+            <button class="back-btn" onclick="goBack()">←</button> 
+            <div class="header-logo" onclick="goToHome()">
+                <img src="logo.png" alt="HANNUN Logo" class="logo-image">
+            </div> 
+        </div> 
+        <div id="detailPageContent"></div> 
+    </div>
     <div class="scanner-modal" id="scannerModal"> <div class="barcode-modal-content"> <div class="barcode-header"> <h3 class="scan-title" id="barcodeScanTitle">바코드 스캐너</h3> <button class="close-scan-btn" onclick="closeScanner()">×</button> </div> <div class="scanner-container" id="scanner-container"> <div id="scanner-viewport"></div> <div class="scan-overlay"> <div class="scan-guide"> <div class="scan-line"></div> </div> </div> </div> <div class="manual-input"> <input type="number" class="barcode-input" id="manualBarcode" placeholder="바코드 번호 직접 입력"> <button class="search-barcode-btn" id="searchBarcodeBtn" onclick="searchByManualBarcode()">검색</button> </div> </div> </div>
     <div class="toast" id="toast"></div>
 
@@ -100,8 +116,8 @@
         // --- 다국어 텍스트 ---
         const translations = {
             ko: { appTitle: '한국 제품을<br>쉽게 찾아보세요', appSubtitle: '검색 방법을 선택하세요', searchByName: '상품명 검색', searchByNameDesc: '이름이나 브랜드로 제품 찾기', scanBarcode: '바코드 스캔', scanBarcodeDesc: '바코드로 정확하게 제품 찾기', searchPlaceholder: '상품명을 입력하세요...', productDetail: '상품 상세 정보', manufacturer: '제조사', expiry: '소비기한', barcode: '바코드', reportNumber: '품목보고번호', searching: '검색 중...', noResults: '검색 결과가 없습니다', loadingInfo: '정보를 불러오는 중...', errorLoading: '정보를 불러오는 중 오류 발생', barcodeTitle: '바코드 스캐너', search: '검색', product_found: '상품을 찾았습니다!', product_not_found: '상품을 찾을 수 없습니다.', camera_error: '카메라를 사용할 수 없습니다.', invalid_barcode: '유효한 바코드 번호를 입력해주세요.', translation_needed: '번역을 위해 API 키가 필요합니다.', preparing_dictionary: '사전 데이터 준비 중...', gemini_searching: '인터넷 크롤링 중...', gemini_result_desc: '인터넷 검색 결과', translating: '번역 중...' },
-            en: { appTitle: 'Find Korean<br>Products Easily', appSubtitle: 'Choose your search method', searchByName: 'Search by Name', searchByNameDesc: 'Find products using their name', scanBarcode: 'Scan Barcode', scanBarcodeDesc: 'Find products with their barcode', searchPlaceholder: 'Enter product name...', productDetail: 'Product Details', manufacturer: 'Manufacturer', expiry: 'Shelf Life', barcode: 'Barcode', reportNumber: 'Report No.', searching: 'Searching...', noResults: 'No search results found', loadingInfo: 'Loading information...', errorLoading: 'Error loading details', barcodeTitle: 'Barcode Scanner', search: 'Search', product_found: 'Product Found!', product_not_found: 'Product not found.', camera_error: 'Could not access camera.', invalid_barcode: 'Please enter a valid barcode.', translation_needed: 'API key is required for translation.', preparing_dictionary: 'Preparing dictionary...', gemini_searching: 'Crawling the Internet...', gemini_result_desc: 'Web Search Result', translating: 'Translating...' },
-            ja: { appTitle: '韓国製品を<br>簡単に見つけよう', appSubtitle: '検索方法を選んでください', searchByName: '商品名で検索', searchByNameDesc: '商品名で製品を検索', scanBarcode: 'バーコードをスキャン', scanBarcodeDesc: 'バーコードで製品を検索', searchPlaceholder: '商品名を入力...', productDetail: '商品詳細', manufacturer: '製造社', expiry: '消費期限', barcode: 'バー코드', reportNumber: '品目報告番号', searching: '検索中...', noResults: '検索結果がありません', loadingInfo: '情報を読み込み中...', errorLoading: 'エラーが発生しました', barcodeTitle: 'バーコードスキャナー', search: '検索', product_found: '製品が見つかりました！', product_not_found: '製品が見つかりません', camera_error: 'カメラにアクセスできません', invalid_barcode: '有効なバーコードを入力してください', translation_needed: '翻訳にはAPIキーが必要です', preparing_dictionary: '辞書を準備しています...', gemini_searching: 'インターネットクロール中...', gemini_result_desc: 'Web検索結果', translating: '翻訳中...'}
+            en: { appTitle: 'Find Korean<br>Products Easily', appSubtitle: 'Choose your search method', searchByName: 'Search by Name', searchByNameDesc: 'Find products using their name', scanBarcode: 'Scan Barcode', scanBarcodeDesc: 'Find products with their barcode', searchPlaceholder: 'Enter product name...', productDetail: 'Product Details', manufacturer: 'Manufacturer', expiry: 'Shelf Life', barcode: 'Barcode', reportNumber: 'Report No.', searching: 'Searching...', noResults: 'No search results found', loadingInfo: 'Loading information...', errorLoading: 'Error loading details', barcodeTitle: 'Barcode Scanner', search: 'Search', product_found: 'Product Found!', product_not_found: 'Product not found.', camera_error: 'Could not access camera.', invalid_barcode: 'Please enter a valid barcode.', translation_needed: 'API key is required for translation.', preparing_dictionary: 'Preparing dictionary...', gemini_searching: '🤖 Asking Gemini AI...', gemini_result_desc: 'Web Search Result', translating: 'Translating...' },
+            ja: { appTitle: '韓国製品を<br>簡単に見つけよう', appSubtitle: '検索方法を選んでください', searchByName: '商品名で検索', searchByNameDesc: '商品名で製品を検索', scanBarcode: 'バーコードをスキャン', scanBarcodeDesc: 'バーコードで製品を検索', searchPlaceholder: '商品名を入力...', productDetail: '商品詳細', manufacturer: '製造社', expiry: '消費期限', barcode: 'バーコード', reportNumber: '品目報告番号', searching: '検索中...', noResults: '検索結果がありません', loadingInfo: '情報を読み込み中...', errorLoading: 'エラーが発生しました', barcodeTitle: 'バーコードスキャナー', search: '検索', product_found: '製品が見つかりました！', product_not_found: '製品が見つかりません', camera_error: 'カメラにアクセスできません', invalid_barcode: '有効なバーコードを入力してください', translation_needed: '翻訳にはAPIキーが必要です', preparing_dictionary: '辞書を準備しています...', gemini_searching: '🤖 Gemini AIに問い合わせ中...', gemini_result_desc: 'Web検索結果', translating: '翻訳中...'}
         };
         const getText = (key) => translations[currentLang][key] || key;
 
@@ -265,18 +281,18 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ "contents": [{ "parts": [{ "text": prompt }] }] })
                 });
-                if (!response.ok) throw new Error(`인터넷 크롤링 오류: Status ${response.status}`);
+                if (!response.ok) throw new Error(`Gemini API 오류: Status ${response.status}`);
                 const data = await response.json();
                 
                 if (!data.candidates || data.candidates.length === 0 || !data.candidates[0].content.parts[0].text) {
-                    throw new Error("인터넷 크롤링으로부터 유효한 답변을 받지 못했습니다.");
+                    throw new Error("Gemini로부터 유효한 답변을 받지 못했습니다.");
                 }
                 const rawText = data.candidates[0].content.parts[0].text;
                 return rawText.split('\n')
                     .map(name => name.replace(/^[\s*-]+/, '').trim())
                     .filter(name => name.length > 0);
             } catch (error) {
-                console.error("인터넷 크롤링 실패:", error);
+                console.error("Gemini 목록 검색 실패:", error);
                 showToast("연관 상품 목록을 가져오는데 실패했습니다.");
                 return [];
             }
@@ -292,16 +308,16 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ "contents": [{ "parts": [{ "text": prompt }] }] })
                 });
-                if (!response.ok) throw new Error(`인터넷 크롤링 오류: Status ${response.status}`);
+                if (!response.ok) throw new Error(`Gemini API 오류: Status ${response.status}`);
                 const data = await response.json();
                 
                 if (!data.candidates || data.candidates.length === 0 || !data.candidates[0].content.parts[0].text) {
-                    throw new Error("인터넷 크롤링으로부터 유효한 답변을 받지 못했습니다.");
+                    throw new Error("Gemini로부터 유효한 답변을 받지 못했습니다.");
                 }
                 const rawText = data.candidates[0].content.parts[0].text;
                 return parseGeminiResponse(rawText, productName);
             } catch (error) {
-                console.error("인터넷 크롤링 실패:", error);
+                console.error("Gemini 상세 정보 검색 실패:", error);
                 showToast("제품 상세 정보를 가져오는데 실패했습니다.");
                 return null;
             }
@@ -321,7 +337,7 @@
             ).slice(0, 30);
 
             if (results.length === 0) {
-                container.innerHTML = `<div class="loading"><div class="spinner"></div>${getText('internet crawling')}</div>`;
+                container.innerHTML = `<div class="loading"><div class="spinner"></div>${getText('gemini_searching')}</div>`;
                 
                 const originalKoreanList = await searchWithGeminiForList(query);
 
@@ -340,7 +356,7 @@
                         return `
                         <div class="result-card" onclick="showProductDetail('${safeOriginalProductName}')">
                             <h3 class="result-name">${productNameToDisplay}</h3>
-                            <p class="result-desc">${getText('internet crawling_result_desc')}</p>
+                            <p class="result-desc">${getText('gemini_result_desc')}</p>
                         </div>
                         `;
                     }).join('');
