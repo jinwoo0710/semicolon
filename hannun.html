@@ -52,7 +52,7 @@
         
         .search-bar-container { flex: 1; display: flex; gap: 0.5rem; }
         .search-input { flex: 1; padding: 0.8rem 1.2rem; border: 2px solid var(--primary-black); border-radius: 0; background: var(--light-gray); font-size: 1rem; outline: none; transition: all 0.2s ease-out; box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.1); }
-        .search-submit-btn { width: 48px; height: 48px; border: 2px solid var(--primary-black); background: var(--primary-black); color: var(--primary-white); cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .search-submit-btn { width: 44px; height: 44px; border: 2px solid var(--primary-black); background: var(--primary-black); color: var(--primary-white); cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 
         .results-container { padding: 0.5rem 1.5rem; }
         .result-card { background: transparent; border-bottom: 1px solid var(--border-color); padding: 1rem 0.5rem; cursor: pointer; transition: background-color 0.15s ease-out; }
@@ -162,30 +162,26 @@
             setTimeout(() => { document.getElementById('splash').classList.add('fade-out'); }, 1500);
             fetchAllProducts();
 
-            // ✅ 검색 이벤트 리스너 수정 (자동 검색 + 버튼/엔터)
             let searchTimeout;
             const searchInput = document.getElementById('searchInput');
             const searchBtn = document.getElementById('searchBtn');
 
             const performSearch = () => {
-                clearTimeout(searchTimeout); // 예약된 자동 검색 취소
+                clearTimeout(searchTimeout);
                 const query = searchInput.value.trim();
                 if (query.length > 0) {
                     searchProducts(query);
                 }
             };
             
-            // 검색 버튼 클릭 시
             searchBtn.addEventListener('click', performSearch);
             
-            // Enter 키 입력 시
             searchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     performSearch();
                 }
             });
 
-            // 1초간 입력 없을 시 자동 검색
             searchInput.addEventListener('input', () => {
                 clearTimeout(searchTimeout);
                 const query = searchInput.value.trim();
@@ -566,8 +562,7 @@
             if(isScanning) return;
             Quagga.init({
                 inputStream: { name: "Live", type: "LiveStream", target: '#scanner-viewport', constraints: { facingMode: "environment" }},
-                decoder: { readers: ["ean_reader", "ean_8_reader", "code_128_reader"] },
-                locate: true
+                decoder: { readers: ["ean_reader"] },
             }, (err) => {
                 if (err) { showToast(getText('camera_error')); console.error(err); return; }
                 Quagga.start();
@@ -580,10 +575,10 @@
             if(isScanning) { Quagga.offDetected(onBarcodeDetected); Quagga.stop(); isScanning = false; }
         }
 
-        const onBarcodeDetected = Quagga.debounce((result) => {
+        const onBarcodeDetected = (result) => {
             stopScanning();
             findProductByBarcode(result.codeResult.code);
-        }, 500, true);
+        };
         
         async function findProductByBarcode(barcode) {
             const productNameGuess = await getProductNameFromBarcode(barcode);
