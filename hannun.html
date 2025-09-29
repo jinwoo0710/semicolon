@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>HANNUN</title>
+    <title>HANNUN - Korean Product Guide</title>
     <link rel="stylesheet" as="style" crossorigin
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
@@ -16,11 +16,23 @@
         .splash-title { font-size: 3.5rem; font-weight: 800; letter-spacing: -0.05em; opacity: 0; animation: splashFadeIn 0.8s ease-out 0.3s forwards; }
         @keyframes splashFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .home-screen { min-height: 100vh; padding: 2.5rem 1.5rem; display: flex; flex-direction: column; align-items: center; }
-        .header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; }
-        /* ✅ 로고 이미지 스타일 추가 */
-        .logo-image { height: 90px; vertical-align: middle; }
+        .header { width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .logo-image { height: 32px; vertical-align: middle; }
         .lang-btn { padding: 0.6rem 1rem; background: var(--light-gray); border: 1px solid var(--border-color); border-radius: 0; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: none; display: flex; align-items: center; gap: 0.4rem; }
-        .main-content { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 3rem; width: 100%; max-width: 500px; margin-top: 3rem; }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-top: 1rem;
+            align-items: center;
+            text-align: center;
+            gap: 2.5rem;
+            width: 100%;
+            max-width: 500px;
+        }
+
         .welcome-text h1 { font-size: clamp(2.2rem, 8vw, 3.2rem); font-weight: 800; line-height: 1.2; letter-spacing: -0.04em; margin-bottom: 0.8rem; }
         .welcome-text p { font-size: 1.15rem; color: var(--accent-gray); font-weight: 500; }
         .search-options { width: 100%; display: flex; flex-direction: column; gap: 1rem; }
@@ -37,7 +49,11 @@
         .back-btn { width: 44px; height: 44px; border-radius: 0; background: var(--primary-black); color: var(--primary-white); border: none; font-size: 1.5rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease-out; box-shadow: none; }
         .header-logo { flex: 1; text-align: center; margin-right: 44px; cursor: pointer; transition: opacity 0.2s; }
         .header-logo:hover { opacity: 0.7; }
+        
+        .search-bar-container { flex: 1; display: flex; gap: 0.5rem; }
         .search-input { flex: 1; padding: 0.8rem 1.2rem; border: 2px solid var(--primary-black); border-radius: 0; background: var(--light-gray); font-size: 1rem; outline: none; transition: all 0.2s ease-out; box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.1); }
+        .search-submit-btn { width: 44px; height: 44px; border: 2px solid var(--primary-black); background: var(--primary-black); color: var(--primary-white); cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+
         .results-container { padding: 0.5rem 1.5rem; }
         .result-card { background: transparent; border-bottom: 1px solid var(--border-color); padding: 1rem 0.5rem; cursor: pointer; transition: background-color 0.15s ease-out; }
         .result-card:hover { background-color: var(--light-gray); }
@@ -48,8 +64,15 @@
         .detail-subtitle { font-size: 1rem; color: var(--accent-gray); margin-bottom: 1.5rem; font-weight: 500; }
         .info-grid { display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0; border-top: 1px solid var(--border-color); }
         .info-item { background: transparent; padding: 0.9rem 0.25rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .info-label { font-size: 0.9rem; color: var(--accent-gray); font-weight: 500; }
-        .info-value { font-size: 0.95rem; font-weight: 600; text-align: right; color: var(--primary-black); word-break: break-all; }
+        .info-label { font-size: 0.9rem; color: var(--accent-gray); font-weight: 500; flex-shrink: 0; padding-right: 1rem; }
+        .info-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: right;
+            color: var(--primary-black);
+            word-break: break-all;
+            width: 40%;
+        }
         .scanner-modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 1rem; }
         .scanner-modal.active { display: flex; }
         .barcode-modal-content { background: var(--primary-white); border-radius: 0; width: 100%; max-width: 500px; margin: 0 auto; overflow: hidden; display: flex; flex-direction: column; border: 2px solid var(--primary-black); box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.2); }
@@ -80,17 +103,30 @@
     <main class="home-screen" id="home"> 
         <header class="header"> 
             <div class="logo"> 
-                <img src="logo.png" alt="HANNUN Logo" class="logo-image">
+                <img src="logo.jpeg" alt="HANNUN Logo" class="logo-image">
             </div> 
             <button class="lang-btn" onclick="toggleLanguage()"> <span id="langFlag">🇰🇷</span> <span id="langCode">KO</span> </button> 
         </header> 
         <div class="main-content"> <div class="welcome-text"> <h1 id="appTitle">한국 제품을<br>쉽게 찾아보세요</h1> <p id="appSubtitle">검색 방법을 선택하세요</p> </div> <div class="search-options"> <div class="search-option" onclick="showPage('searchResults')"> <div class="option-icon"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /> </svg> </div> <div class="option-info"> <h3 class="option-title" id="searchByName">상품명 검색</h3> <p class="option-desc" id="searchByNameDesc">이름이나 브랜드로 제품 찾기</p> </div> </div> <div class="search-option" onclick="openBarcodeScanner()"> <div class="option-icon"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.5A.75.75 0 0 1 4.5 3.75h15a.75.75 0 0 1 .75.75v15a.75.75 0 0 1-.75.75h-15a.75.75 0 0 1-.75-.75v-15ZM8.25 9v6m3-6v6m3-6v6m3-6v6" /> </svg> </div> <div class="option-info"> <h3 class="option-title" id="scanBarcode">바코드 스캔</h3> <p class="option-desc" id="scanBarcodeDesc">바코드로 정확하게 제품 찾기</p> </div> </div> </div> </div> </main>
-    <div class="page-slide-right" id="searchResults"> <div class="page-header"> <button class="back-btn" onclick="goBack()">←</button> <input type="text" class="search-input" id="searchInput" placeholder="상품명을 입력하세요..."> </div> <div class="results-container" id="resultsContainer"></div> </div>
+    <div class="page-slide-right" id="searchResults"> 
+        <div class="page-header"> 
+            <button class="back-btn" onclick="goBack()">←</button> 
+            <div class="search-bar-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="상품명을 입력하세요...">
+                <button class="search-submit-btn" id="searchBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                </button>
+            </div>
+        </div> 
+        <div class="results-container" id="resultsContainer"></div> 
+    </div>
     <div class="page-slide-right" id="detail"> 
         <div class="page-header"> 
             <button class="back-btn" onclick="goBack()">←</button> 
             <div class="header-logo" onclick="goToHome()">
-                <img src="logo.png" alt="HANNUN Logo" class="logo-image">
+                <img src="logo.jpeg" alt="HANNUN Logo" class="logo-image">
             </div> 
         </div> 
         <div id="detailPageContent"></div> 
@@ -115,9 +151,9 @@
 
         // --- 다국어 텍스트 ---
         const translations = {
-            ko: { appTitle: '한국 제품을<br>쉽게 찾아보세요', appSubtitle: '검색 방법을 선택하세요', searchByName: '상품명 검색', searchByNameDesc: '이름이나 브랜드로 제품 찾기', scanBarcode: '바코드 스캔', scanBarcodeDesc: '바코드로 정확하게 제품 찾기', searchPlaceholder: '상품명을 입력하세요...', productDetail: '상품 상세 정보', manufacturer: '제조사', expiry: '소비기한', barcode: '바코드', reportNumber: '품목보고번호', searching: '검색 중...', noResults: '검색 결과가 없습니다', loadingInfo: '정보를 불러오는 중...', errorLoading: '정보를 불러오는 중 오류 발생', barcodeTitle: '바코드 스캐너', search: '검색', product_found: '상품을 찾았습니다!', product_not_found: '상품을 찾을 수 없습니다.', camera_error: '카메라를 사용할 수 없습니다.', invalid_barcode: '유효한 바코드 번호를 입력해주세요.', translation_needed: '번역을 위해 API 키가 필요합니다.', preparing_dictionary: '사전 데이터 준비 중...', gemini_searching: '인터넷 크롤링 중...', gemini_result_desc: '인터넷 검색 결과', translating: '번역 중...' },
-            en: { appTitle: 'Find Korean<br>Products Easily', appSubtitle: 'Choose your search method', searchByName: 'Search by Name', searchByNameDesc: 'Find products using their name', scanBarcode: 'Scan Barcode', scanBarcodeDesc: 'Find products with their barcode', searchPlaceholder: 'Enter product name...', productDetail: 'Product Details', manufacturer: 'Manufacturer', expiry: 'Shelf Life', barcode: 'Barcode', reportNumber: 'Report No.', searching: 'Searching...', noResults: 'No search results found', loadingInfo: 'Loading information...', errorLoading: 'Error loading details', barcodeTitle: 'Barcode Scanner', search: 'Search', product_found: 'Product Found!', product_not_found: 'Product not found.', camera_error: 'Could not access camera.', invalid_barcode: 'Please enter a valid barcode.', translation_needed: 'API key is required for translation.', preparing_dictionary: 'Preparing dictionary...', gemini_searching: '🤖 Asking Gemini AI...', gemini_result_desc: 'Web Search Result', translating: 'Translating...' },
-            ja: { appTitle: '韓国製品を<br>簡単に見つけよう', appSubtitle: '検索方法を選んでください', searchByName: '商品名で検索', searchByNameDesc: '商品名で製品を検索', scanBarcode: 'バーコードをスキャン', scanBarcodeDesc: 'バーコードで製品を検索', searchPlaceholder: '商品名を入力...', productDetail: '商品詳細', manufacturer: '製造社', expiry: '消費期限', barcode: 'バーコード', reportNumber: '品目報告番号', searching: '検索中...', noResults: '検索結果がありません', loadingInfo: '情報を読み込み中...', errorLoading: 'エラーが発生しました', barcodeTitle: 'バーコードスキャナー', search: '検索', product_found: '製品が見つかりました！', product_not_found: '製品が見つかりません', camera_error: 'カメラにアクセスできません', invalid_barcode: '有効なバーコードを入力してください', translation_needed: '翻訳にはAPIキーが必要です', preparing_dictionary: '辞書を準備しています...', gemini_searching: '🤖 Gemini AIに問い合わせ中...', gemini_result_desc: 'Web検索結果', translating: '翻訳中...'}
+            ko: { appTitle: '한국 제품을<br>쉽게 찾아보세요', appSubtitle: '검색 방법을 선택하세요', searchByName: '상품명 검색', searchByNameDesc: '이름이나 브랜드로 제품 찾기', scanBarcode: '바코드 스캔', scanBarcodeDesc: '바코드로 정확하게 제품 찾기', searchPlaceholder: '상품명을 입력하세요...', productDetail: '상품 상세 정보', manufacturer: '제조사', expiry: '소비기한', barcode: '바코드', reportNumber: '품목보고번호', searching: '검색 중...', noResults: '검색 결과가 없습니다', loadingInfo: '정보를 불러오는 중...', errorLoading: '정보를 불러오는 중 오류 발생', barcodeTitle: '바코드 스캐너', search: '검색', product_found: '상품을 찾았습니다!', product_not_found: '상품을 찾을 수 없습니다.', camera_error: '카메라를 사용할 수 없습니다.', invalid_barcode: '유효한 바코드 번호를 입력해주세요.', translation_needed: '번역을 위해 API 키가 필요합니다.', preparing_dictionary: '사전 데이터 준비 중...', gemini_searching: '인터넷 크롤링 중...', translating: '번역 중...' },
+            en: { appTitle: 'Find Korean<br>Products Easily', appSubtitle: 'Choose your search method', searchByName: 'Search by Name', searchByNameDesc: 'Find products using their name', scanBarcode: 'Scan Barcode', scanBarcodeDesc: 'Find products with their barcode', searchPlaceholder: 'Enter product name...', productDetail: 'Product Details', manufacturer: 'Manufacturer', expiry: 'Shelf Life', barcode: 'Barcode', reportNumber: 'Report No.', searching: 'Searching...', noResults: 'No search results found', loadingInfo: 'Loading information...', errorLoading: 'Error loading details', barcodeTitle: 'Barcode Scanner', search: 'Search', product_found: 'Product Found!', product_not_found: 'Product not found.', camera_error: 'Could not access camera.', invalid_barcode: 'Please enter a valid barcode.', translation_needed: 'API key is required for translation.', preparing_dictionary: 'Preparing dictionary...', gemini_searching: '🤖 Asking Gemini AI...', translating: 'Translating...' },
+            ja: { appTitle: '韓国製品を<br>簡単に見つけよう', appSubtitle: '検索方法を選んでください', searchByName: '商品名で検索', searchByNameDesc: '商品名で製品を検索', scanBarcode: 'バーコードをスキャン', scanBarcodeDesc: 'バーコードで製品を検索', searchPlaceholder: '商品名を入力...', productDetail: '商品詳細', manufacturer: '製造社', expiry: '消費期限', barcode: 'バーコード', reportNumber: '品목報告番号', searching: '検索中...', noResults: '検索結果がありません', loadingInfo: '情報を読み込み中...', errorLoading: 'エラーが発生しました', barcodeTitle: 'バーコードスキャナー', search: '検索', product_found: '製品が見つかりました！', product_not_found: '製品が見つかりません', camera_error: 'カメラにアクセスできません', invalid_barcode: '有効なバーコードを入力してください', translation_needed: '翻訳にはAPIキーが必要です', preparing_dictionary: '辞書を準備しています...', gemini_searching: '🤖 Gemini AIに問い合わせ中...', translating: '翻訳中...'}
         };
         const getText = (key) => translations[currentLang][key] || key;
 
@@ -125,17 +161,39 @@
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => { document.getElementById('splash').classList.add('fade-out'); }, 1500);
             fetchAllProducts();
+
+            // ✅ 검색 이벤트 리스너 수정 (자동 검색 + 버튼/엔터)
             let searchTimeout;
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                clearTimeout(searchTimeout);
-                const query = e.target.value.trim();
-                if (isTranslatingCache) return;
-                if (query.length === 0) {
-                    document.getElementById('resultsContainer').innerHTML = '';
-                    return;
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+
+            const performSearch = () => {
+                clearTimeout(searchTimeout); // 예약된 자동 검색 취소
+                const query = searchInput.value.trim();
+                if (query.length > 0) {
+                    searchProducts(query);
                 }
-                searchTimeout = setTimeout(() => searchProducts(query), 300);
+            };
+            
+            // 검색 버튼 클릭 시
+            searchBtn.addEventListener('click', performSearch);
+            
+            // Enter 키 입력 시
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
             });
+
+            // 1초간 입력 없을 시 자동 검색
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                const query = searchInput.value.trim();
+                if (query.length > 0) {
+                    searchTimeout = setTimeout(performSearch, 1000);
+                }
+            });
+
             updateUITexts();
         });
 
@@ -256,7 +314,7 @@
                 if (activePage === 'searchResults') document.getElementById('resultsContainer').innerHTML = '';
             }
         }
-
+        
         function parseGeminiResponse(text, query) {
             const product = { '상품명': query };
             const lines = text.split('\n');
@@ -264,16 +322,16 @@
                 const parts = line.split(':');
                 if (parts.length >= 2) {
                     const key = parts[0].trim().replace(/\*\*/g, '');
-                    const value = parts.slice(1).join(':').trim();
+                    const value = parts.slice(1).join(':').trim().replace(/\*\*/g, '');
                     product[key] = value;
                 }
             });
-            return product['제조사'] || product['바코드번호'] ? product : null;
+            return product;
         }
-        
+
         async function searchWithGeminiForList(query) {
             const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
-            const prompt = `그럼 이제 검색엔진처럼 작동해봐. 예를들어 내가 진라면을 검색하면 너는 진라면 매운맛, 진라면 순한맛, 진라면 중간맛 등등 처럼 검색어 연관순으로 대답을 하는거야 알겠지? 다른 대답은 필요없고 제품 리스트만 있으면 돼. 검색어가 '${query}'일떄 리스트출력해줘`;
+            const prompt = `이제 검색엔진처럼 작동해봐. 예를들어 내가 진라면을 검색하면 너는 진라면 매운맛, 진라면 순한맛, 진라면 중간맛 등등 처럼 검색어 연관순으로 대답을 하는거야.이제 내가 '${query}'(으)로 검색하면 상품의 이름과 제조사를 '제품명 | 제조사' 형식으로 알려줘. 다른 설명, 숫자, 기호 없이, 한 줄에 하나씩만 나열해줘.`;
 
             try {
                 const response = await fetch(GEMINI_URL, {
@@ -289,18 +347,24 @@
                 }
                 const rawText = data.candidates[0].content.parts[0].text;
                 return rawText.split('\n')
-                    .map(name => name.replace(/^[\s*-]+/, '').trim())
-                    .filter(name => name.length > 0);
+                    .map(line => {
+                        const parts = line.split('|').map(part => part.trim());
+                        if (parts.length === 2) {
+                            return { name: parts[0], manufacturer: parts[1] };
+                        }
+                        return null;
+                    })
+                    .filter(item => item && item.name);
             } catch (error) {
                 console.error("Gemini 목록 검색 실패:", error);
                 showToast("연관 상품 목록을 가져오는데 실패했습니다.");
                 return [];
             }
         }
-
+        
         async function getGeminiProductDetails(productName) {
             const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
-            const prompt = `'${productName}'(이)라는 한국 상품의 제조사, 소비기한, 바코드번호, 품목보고번호 정보를 알려줘. 정보가 없다면 "정보 없음"으로 표시하고, 다른 설명 없이 항목과 값만 "항목: 값" 형식으로 나열해줘.`;
+            const prompt = `'${productName}'(이)라는 한국 상품에 대해 구매자가 궁금해할 만한 상세 정보를 알려줘. 항상 **제조사, 제품 카테고리, 바코드 번호**는 포함해줘. 만약 식품이라면 **칼로리, 영양성분(탄수화물, 단백질, 지방), 전체 성분, 알레르기 정보, 비건 여부**를 추가하고, 화장품이라면 **제품 유형(토너, 앰플 등), 주요 성분, 비건 여부**를 추가해줘. 정보가 없거나 해당 없는 항목은 제외하고, "항목: 값" 형식으로만 나열해줘.`;
 
             try {
                 const response = await fetch(GEMINI_URL, {
@@ -346,17 +410,28 @@
                     
                     if (currentLang !== 'ko') {
                         showToast(getText('translating'));
-                        displayList = await translate(originalKoreanList, 'ko', currentLang, true);
+                        const namesToTranslate = originalKoreanList.map(item => item.name);
+                        const manufacturersToTranslate = originalKoreanList.map(item => item.manufacturer);
+                        
+                        const [translatedNames, translatedManufacturers] = await Promise.all([
+                            translate(namesToTranslate, 'ko', currentLang, true),
+                            translate(manufacturersToTranslate, 'ko', currentLang, true)
+                        ]);
+
+                        displayList = originalKoreanList.map((item, index) => ({
+                            name: translatedNames[index],
+                            manufacturer: translatedManufacturers[index]
+                        }));
                     }
 
-                    container.innerHTML = displayList.map((productNameToDisplay, index) => {
-                        const originalProductName = originalKoreanList[index];
+                    container.innerHTML = displayList.map((displayItem, index) => {
+                        const originalProductName = originalKoreanList[index].name;
                         const safeOriginalProductName = originalProductName.replace(/"/g, '&quot;').replace(/'/g, "\\'");
                         
                         return `
                         <div class="result-card" onclick="showProductDetail('${safeOriginalProductName}')">
-                            <h3 class="result-name">${productNameToDisplay}</h3>
-                            <p class="result-desc">${getText('gemini_result_desc')}</p>
+                            <h3 class="result-name">${displayItem.name}</h3>
+                            <p class="result-desc">${displayItem.manufacturer}</p>
                         </div>
                         `;
                     }).join('');
@@ -365,63 +440,79 @@
                 }
             } else {
                 container.innerHTML = results.map(product => {
-                    const productDataString = JSON.stringify(product).replace(/"/g, '&quot;');
+                    const productName = product[productNameKey] || product.PRDLST_NM;
+                    const companyName = product[companyNameKey] || product.BSSH_NM;
+                    const safeProductName = productName.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+                    
                     return `
-                    <div class="result-card" onclick='showProductDetail(${productDataString})'>
-                        <h3 class="result-name">${product[productNameKey] || product.PRDLST_NM}</h3>
-                        <p class="result-desc">${product[companyNameKey] || product.BSSH_NM}</p>
+                    <div class="result-card" onclick="showProductDetail('${safeProductName}')">
+                        <h3 class="result-name">${productName}</h3>
+                        <p class="result-desc">${companyName}</p>
                     </div>
                     `;
                 }).join('');
             }
         }
-
-        function normalizeProductData(productData) {
-            if (typeof productData === 'string') {
-                try { productData = JSON.parse(productData); } catch (e) { console.error("파싱 오류:", e); return {}; }
-            }
-            const isFromPublicApi = 'PRDLST_NM' in productData;
-            if (isFromPublicApi) {
-                return { name: productData.PRDLST_NM, company: productData.BSSH_NM, expiry: productData.POG_DAYCNT, barcode: productData.BAR_CD, reportNumber: productData.PRDLST_REPORT_NO };
-            } else {
-                return { name: productData['상품명'], company: productData['제조사'], expiry: productData['소비기한'], barcode: productData['바코드번호'], reportNumber: productData['품목보고번호'] };
-            }
-        }
-
-        async function showProductDetail(productData) {
+        
+        async function showProductDetail(productName) {
             const content = document.getElementById('detailPageContent');
             showPage('detail');
             content.innerHTML = `<div class="loading"><div class="spinner"></div>${getText('loadingInfo')}</div>`;
 
-            let details;
-
-            if (typeof productData === 'string') {
-                const productName = productData.replace(/&quot;/g, '"');
-                const geminiDetailsObject = await getGeminiProductDetails(productName);
-                if (geminiDetailsObject) {
-                    details = normalizeProductData(geminiDetailsObject);
-                } else {
-                    content.innerHTML = `<div class="no-results">${getText('errorLoading')}</div>`;
-                    return;
-                }
-            } else {
-                details = normalizeProductData(productData);
+            const cleanProductName = productName.replace(/&quot;/g, '"');
+            
+            const details = await getGeminiProductDetails(cleanProductName);
+            
+            if (!details) {
+                content.innerHTML = `<div class="no-results">${getText('errorLoading')}</div>`;
+                return;
             }
             
-            const pName = (currentLang !== 'ko' && details.name) ? await translate(details.name, 'ko', currentLang) : details.name;
-            const pCompany = (currentLang !== 'ko' && details.company) ? await translate(details.company, 'ko', currentLang) : details.company;
+            let pName = details['상품명'] || cleanProductName;
+            let pCompany = details['제조사'] || '-';
             
+            const infoItems = { ...details };
+            delete infoItems['상품명'];
+            delete infoItems['제조사'];
+
+            let title = pName;
+            let subtitle = pCompany;
+            let finalInfoItems = infoItems;
+
+            if (currentLang !== 'ko') {
+                showToast(getText('translating'));
+                const keysToTranslate = Object.keys(infoItems);
+                const valuesToTranslate = Object.values(infoItems);
+
+                const [translatedTitle, translatedSubtitle, translatedKeys, translatedValues] = await Promise.all([
+                    translate(pName, 'ko', currentLang),
+                    translate(pCompany, 'ko', currentLang),
+                    keysToTranslate.length > 0 ? translate(keysToTranslate, 'ko', currentLang, true) : Promise.resolve([]),
+                    valuesToTranslate.length > 0 ? translate(valuesToTranslate, 'ko', currentLang, true) : Promise.resolve([])
+                ]);
+
+                title = translatedTitle;
+                subtitle = translatedSubtitle;
+                
+                finalInfoItems = {};
+                translatedKeys.forEach((translatedKey, index) => {
+                    finalInfoItems[translatedKey] = translatedValues[index];
+                });
+            }
+
+            const infoGridHtml = Object.entries(finalInfoItems).map(([key, value]) => {
+                if (!value || value.toLowerCase() === '정보 없음' || value.trim() === '') return '';
+                return `<div class="info-item"><p class="info-label">${key}</p><p class="info-value">${value}</p></div>`;
+            }).join('');
+
             content.innerHTML = `
                 <div class="detail-hero">
-                    <h1 class="detail-title">${pName || '-'}</h1>
-                    <p class="detail-subtitle">${pCompany || '-'}</p>
+                    <h1 class="detail-title">${title}</h1>
+                    <p class="detail-subtitle">${subtitle}</p>
                 </div>
-                <div class="detail-content">
+                <div class="detail-content" style="padding: 0 1.5rem;">
                     <div class="info-grid">
-                        <div class="info-item"><p class="info-label">${getText('manufacturer')}</p><p class="info-value">${pCompany || '-'}</p></div>
-                        <div class="info-item"><p class="info-label">${getText('expiry')}</p><p class="info-value">${details.expiry || '-'}</p></div>
-                        <div class="info-item"><p class="info-label">${getText('barcode')}</p><p class="info-value">${details.barcode || '-'}</p></div>
-                        <div class="info-item"><p class="info-label">${getText('reportNumber')}</p><p class="info-value">${details.reportNumber || '-'}</p></div>
+                        ${infoGridHtml}
                     </div>
                 </div>`;
         }
@@ -495,23 +586,33 @@
         }, 500, true);
         
         async function findProductByBarcode(barcode) {
-            const url = `${FOOD_API_BASE}/1/5/BAR_CD=${barcode}`;
-            try {
-                const response = await fetch(PROXY_URL + url);
-                if (!response.ok) throw new Error(`API 응답 실패: ${response.status}`);
-                const data = await response.json();
-                if (data.C005?.row) {
-                    const product = Array.isArray(data.C005.row) ? data.C005.row[0] : data.C005.row;
-                    showToast(getText('product_found'));
-                    closeScanner();
-                    showProductDetail(product);
-                } else {
-                    showToast(getText('product_not_found'));
-                    closeScanner();
-                }
-            } catch (error) {
-                showToast(error.message);
+            const productNameGuess = await getProductNameFromBarcode(barcode);
+            if (productNameGuess) {
+                showToast(getText('product_found'));
                 closeScanner();
+                showProductDetail(productNameGuess);
+            } else {
+                showToast(getText('product_not_found'));
+                closeScanner();
+            }
+        }
+        
+        async function getProductNameFromBarcode(barcode) {
+            const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
+            const prompt = `한국 상품 바코드 번호가 '${barcode}'일 때, 이 상품의 가장 정확한 전체 제품 이름(브랜드 포함) 하나만 알려줘. 다른 설명은 모두 제외하고 오직 제품 이름만 응답해줘.`;
+            try {
+                const response = await fetch(GEMINI_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ "contents": [{ "parts": [{ "text": prompt }] }] })
+                });
+                if (!response.ok) return null;
+                const data = await response.json();
+                if (!data.candidates || data.candidates.length === 0) return null;
+                return data.candidates[0].content.parts[0].text.trim();
+            } catch (error) {
+                console.error("바코드->이름 변환 실패:", error);
+                return null;
             }
         }
 
@@ -522,4 +623,5 @@
         }
     </script>
 </body>
+
 </html>
