@@ -574,22 +574,48 @@
         function stopScanning() {
             if(isScanning) { Quagga.offDetected(onBarcodeDetected); Quagga.stop(); isScanning = false; }
         }
-
-        const onBarcodeDetected = (result) => {
-            stopScanning();
-            findProductByBarcode(result.codeResult.code);
-        };
         
-        async function findProductByBarcode(barcode) {
-            const productNameGuess = await getProductNameFromBarcode(barcode);
-            if (productNameGuess) {
-                showToast(getText('product_found'));
-                closeScanner();
-                showProductDetail(productNameGuess);
-            } else {
-                showToast(getText('product_not_found'));
-                closeScanner();
+        function searchByManualBarcode() {
+            const barcode = document.getElementById('manualBarcode').value.trim();
+            if(barcode.length < 8) { 
+                showToast(getText('invalid_barcode')); 
+                return; 
             }
+            initiateBarcodeSearch(barcode);
+        }
+        
+        const onBarcodeDetected = (result) => {
+            const barcode = result.codeResult.code;
+            initiateBarcodeSearch(barcode);
+        };
+
+        function initiateBarcodeSearch(barcode) {
+            closeScanner();
+            showPage('detail');
+            const content = document.getElementById('detailPageContent');
+            content.innerHTML = `<div class="loading"><div class="spinner"></div>${getText('searching')}</div>`;
+
+            (async () => {
+                let productName = null;
+
+                if (searchCache) {
+                    const cachedProduct = searchCache.find(p => p.BAR_CD === barcode);
+                    if (cachedProduct) {
+                        productName = cachedProduct.PRDLST_NM;
+                    }
+                }
+
+                if (!productName) {
+                    productName = await getProductNameFromBarcode(barcode);
+                }
+
+                if (productName) {
+                    showProductDetail(productName);
+                } else {
+                    showToast(getText('product_not_found'));
+                    goBack();
+                }
+            })();
         }
         
         async function getProductNameFromBarcode(barcode) {
@@ -603,18 +629,12 @@
                 });
                 if (!response.ok) return null;
                 const data = await response.json();
-                if (!data.candidates || data.candidates.length === 0) return null;
+                if (!data.candidates || data.candidates.length === 0 || !data.candidates[0].content.parts[0].text) return null;
                 return data.candidates[0].content.parts[0].text.trim();
             } catch (error) {
                 console.error("바코드->이름 변환 실패:", error);
                 return null;
             }
-        }
-
-        function searchByManualBarcode() {
-            const barcode = document.getElementById('manualBarcode').value.trim();
-            if(barcode.length < 8) { showToast(getText('invalid_barcode')); return; }
-            findProductByBarcode(barcode);
         }
     </script>
 </body>
