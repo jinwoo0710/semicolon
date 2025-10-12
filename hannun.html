@@ -66,13 +66,9 @@
         #ai-scanner-viewport { width: 100%; height: 100%; position: relative; }
         #ai-scanner-video { width: 100%; height: 100%; object-fit: cover; }
         .scan-overlay { position: absolute; inset: 0; pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .scan-guide { width: 80%; height: 50%; position: relative; background: transparent; }
-        .scan-guide::before, .scan-guide::after, .scan-guide .bottom-corners::before, .scan-guide .bottom-corners::after { content: ''; position: absolute; width: 40px; height: 40px; border: 5px solid var(--primary-white); box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
-        .scan-guide::before { top: 0; left: 0; border-right: none; border-bottom: none; }
-        .scan-guide::after { top: 0; right: 0; border-left: none; border-bottom: none; }
-        .scan-guide .bottom-corners { position: absolute; bottom: 0; left: 0; right: 0; height: 40px; }
-        .scan-guide .bottom-corners::before { bottom: 0; left: 0; border-right: none; border-top: none; }
-        .scan-guide .bottom-corners::after { bottom: 0; right: 0; border-left: none; border-top: none; }
+        .scan-guide { width: 70%; max-width: 300px; height: 120px; position: relative; border: 2px solid #00FF00; }
+        .scan-line { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: #00FF00; animation: scan 2s cubic-bezier(0.5, 0, 0.5, 1) infinite; box-shadow: 0 0 8px #00FF00; }
+        @keyframes scan { 0% { transform: translateY(0); } 100% { transform: translateY(118px); } }
         .ai-detection-info { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.9rem; font-weight: 600; }
         .manual-input { padding: 1.5rem; background: var(--light-gray); border-top: 1px solid var(--border-color); }
         .barcode-input { width: 100%; padding: 0.8rem 1rem; border: 2px solid var(--primary-black); border-radius: 0; font-size: 1rem; text-align: center; margin-bottom: 0.8rem; outline: none; background-color: var(--primary-white); transition: all 0.2s ease-out; box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.1); }
@@ -250,16 +246,16 @@
         
         // --- 다국어 텍스트 및 지원 언어 ---
         const supportedLanguages = [
-            { code: 'ko', name: '🇰🇷 한국어' }, { code: 'en', name: '🇺🇸 English' }, { code: 'ja', name: '🇯🇵 日本語' },
-            { code: 'zh-CN', name: '🇨🇳 中文 (简体)' }, { code: 'es', name: '🇪🇸 Español' }, { code: 'fr', name: '🇫🇷 Français' },
-            { code: 'de', name: '🇩🇪 Deutsch' }, { code: 'vi', name: '🇻🇳 Tiếng Việt' }, { code: 'th', name: '🇹🇭 ภาษาไทย' },
-            { code: 'ru', name: '🇷🇺 Русский' }
+            { code: 'ko', name: '한국어' }, { code: 'en', name: 'English' }, { code: 'ja', name: '日本語' },
+            { code: 'zh-CN', name: '中文 (简体)' }, { code: 'es', name: 'Español' }, { code: 'fr', name: 'Français' },
+            { code: 'de', name: 'Deutsch' }, { code: 'vi', name: 'Tiếng Việt' }, { code: 'th', name: 'ภาษาไทย' },
+            { code: 'ru', name: 'Русский' }
         ];
 
         const translations = {
             ko: { appTitle: '한국 제품을<br>쉽게 찾아보세요', appSubtitle: '검색 방법을 선택하세요', searchByName: '상품명 검색', searchByNameDesc: '이름이나 브랜드로 제품 찾기', scanBarcode: '바코드 스캔', scanBarcodeDesc: '바코드로 정확하게 제품 찾기', searchByImage: 'AI 실시간 인식', searchByImageDesc: '카메라로 제품을 비추면 자동 인식', searchPlaceholder: '상품명을 입력하세요...', productDetail: '상품 상세 정보', manufacturer: '제조사', barcode: '바코드', searching: '검색 중...', noResults: '검색 결과가 없습니다', loadingInfo: '정보를 불러오는 중...', errorLoading: '정보를 불러오는 중 오류 발생', barcodeTitle: '바코드 스캐너', aiScanTitle: 'AI 실시간 인식', search: '검색', product_not_found: '상품을 찾을 수 없습니다.', camera_error: '카메라를 사용할 수 없습니다.', invalid_barcode: '유효한 바코드 번호를 입력해주세요.', preparing_dictionary: '사전 데이터 준비 중...', gemini_searching: '검색중...', translating: '번역 중...', model_loading: 'AI 모델 로딩 중...' },
             en: { appTitle: 'Find Korean<br>Products Easily', appSubtitle: 'Choose your search method', searchByName: 'Search by Name', searchByNameDesc: 'Find products using their name', scanBarcode: 'Scan Barcode', scanBarcodeDesc: 'Find products with their barcode', searchByImage: 'Live AI Recognition', searchByImageDesc: 'Point your camera to recognize products', searchPlaceholder: 'Enter product name...', productDetail: 'Product Details', manufacturer: 'Manufacturer', barcode: 'Barcode', searching: 'Searching...', noResults: 'No search results found', loadingInfo: 'Loading information...', errorLoading: 'Error loading details', barcodeTitle: 'Barcode Scanner', aiScanTitle: 'Live AI Recognition', search: 'Search', product_not_found: 'Product not found.', camera_error: 'Could not access camera.', invalid_barcode: 'Please enter a valid barcode.', preparing_dictionary: 'Preparing dictionary...', gemini_searching: 'Searching...', translating: 'Translating...', model_loading: 'Loading AI model...' },
-            ja: { appTitle: '韓国製品を<br>簡単に見つけよう', appSubtitle: '検索方法を選んでください', searchByName: '商品名で検索', searchByNameDesc: '商品名で製品を検索', scanBarcode: 'バーコードをスキャン', scanBarcodeDesc: 'バーコードで製品を検索', searchByImage: 'AIリアルタイム認識', searchByImageDesc: 'カメラで製品を自動認識', searchPlaceholder: '商品名を入力...', productDetail: '商品詳細', manufacturer: '製造社', barcode: 'バーコード', searching: '検索中...', noResults: '検索結果がありません', loadingInfo: '情報を読み込み中...', errorLoading: 'エラーが発生しました', barcodeTitle: 'バーコードスキャナー', aiScanTitle: 'AIリアルタイム認識', search: '検索', product_not_found: '製品が見つかりません', camera_error: 'カメラにアクセスできません', invalid_barcode: '有効なバーコードを入力してください', preparing_dictionary: '辞書を準備しています...', gemini_searching: '検索中...', translating: '翻訳中...', model_loading: 'AIモデル読み込み中...'}
+            ja: { appTitle: '韓国製品を<br>簡単に見つけよう', appSubtitle: '検索方法を選んでください', searchByName: '商品名で検索', searchByNameDesc: '商品名で製品を検索', scanBarcode: 'バーコードをスキャン', scanBarcodeDesc: 'バーコードで製品を検索', searchByImage: 'AIリアルタイム認識', searchByImageDesc: 'カメラで製品を自動認識', searchPlaceholder: '商品名を入力...', productDetail: '商品詳細', manufacturer: '製造社', barcode: 'バーコード', searching: '検索中...', noResults: '検索結果がありません', loadingInfo: '情報を読み込み中...', errorLoading: 'エラーが発生しました', barcodeTitle: 'バーコードスキャナー', aiScanTitle: 'AIリアルタイム認識', search: '検索', product_not_found: '製品が見つかりません', camera_error: 'カメラにアクセスできません', invalid_barcode: '有効なバー코드を入力してください', preparing_dictionary: '辞書を準備しています...', gemini_searching: '検索中...', translating: '翻訳中...', model_loading: 'AIモデル読み込み中...'}
         };
         
         const getText = (key) => (translations[currentLang] && translations[currentLang][key]) || (translations['ko'] && translations['ko'][key]) || key;
@@ -275,11 +271,9 @@
         }
         
         document.addEventListener('DOMContentLoaded', () => {
-            // --- 데이터 로딩 ---
             fetchAllProducts();
             loadAIModel();
-            
-            // --- 언어 선택 메뉴 생성 ---
+        
             const langSelector = document.getElementById('langSelector');
             supportedLanguages.forEach(lang => {
                 const option = document.createElement('option');
@@ -290,7 +284,6 @@
             });
             updateUITexts();
 
-            // --- 스플래시 화면 애니메이션 ---
             const splashTitle = document.getElementById('splashTitle');
             const text = "HANNUN";
             text.split('').forEach((letter, i) => {
@@ -303,12 +296,11 @@
                 document.getElementById('splash').classList.add('fade-out');
             }, 2500);
 
-            // --- 홈 화면 타이핑 애니메이션 ---
             const appTitle = document.getElementById('appTitle');
             setTimeout(() => {
                 appTitle.innerHTML = '';
                 typeWriter(appTitle, '한국 제품을<br>쉽게 찾아보세요', 100);
-            }, 3000); // 스플래시가 사라진 후 시작
+            }, 3000);
 
             function typeWriter(element, text, speed) {
                 let i = 0;
@@ -318,13 +310,12 @@
                         i++;
                         setTimeout(typing, speed);
                     } else {
-                        element.innerHTML = text; // 타이핑 완료 후 커서 제거
+                        element.innerHTML = text;
                     }
                 };
                 typing();
             }
 
-            // --- 검색 기능 이벤트 리스너 ---
             let searchTimeout;
             const searchInput = document.getElementById('searchInput');
             const searchBtn = document.getElementById('searchBtn');
@@ -779,65 +770,22 @@
         }
         
         function startScanning() {
-    if (isScanning) return;
-    scanLocked = false;
-    detectionHistory = [];
-
-    Quagga.init({
-        inputStream: {
-            name: "Live",
-            type: "LiveStream",
-            target: document.querySelector('#scanner-viewport'),
-            constraints: {
-                width: { min: 640, ideal: 1920, max: 2560 }, // [수정 1] 고해상도 요청
-                height: { min: 480, ideal: 1080, max: 1440 },
-                facingMode: "environment",
-                // [수정 2] 고급 초점 제어 추가
-                advanced: [
-                    { focusMode: "continuous" },
-                    { zoom: { ideal: 1.5 } } // 초기 줌 값을 약간 당겨서 시작
-                ]
-            }
-        },
-        // [수정 3] 작은 바코드를 찾기 위한 정밀 탐색 설정
-        locator: {
-            patchSize: "medium", // "x-small", "small", "medium", "large", "x-large"
-            halfSample: false,  // false로 해야 더 정밀하지만 약간 느려짐
-        },
-        numOfWorkers: navigator.hardwareConcurrency || 4,
-        decoder: {
-            readers: ["ean_reader", "ean_8_reader", "code_128_reader"],
-            multiple: false // 한 번에 여러 바코드 동시 인식 방지
-        },
-        locate: true
-    }, (err) => {
-        if (err) {
-            console.error('Quagga 초기화 오류:', err);
-            showToast(getText('camera_error'));
-            return;
-        }
-        Quagga.start();
-        isScanning = true;
-
-        // [추가] 탭하여 초점 맞추기 기능
-        const video = document.querySelector('#scanner-viewport video');
-        if (video) {
-            video.addEventListener('click', (event) => {
-                try {
-                    const track = aiScannerStream.getVideoTracks()[0];
-                    const capabilities = track.getCapabilities();
-                    if (capabilities.focusMode && capabilities.focusMode.includes('manual')) {
-                        track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
-                        showToast('자동 초점 재설정');
-                    }
-                } catch (e) {
-                    console.warn('초점 재설정 기능이 지원되지 않는 기기입니다.', e);
-                }
+            if (isScanning) return;
+            scanLocked = false;
+            detectionHistory = [];
+            Quagga.init({
+                inputStream: { name: "Live", type: "LiveStream", target: document.querySelector('#scanner-viewport'), constraints: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 }, focusMode: "continuous" } },
+                locator: { patchSize: "medium", halfSample: true },
+                numOfWorkers: navigator.hardwareConcurrency || 4,
+                decoder: { readers: ["ean_reader", "ean_8_reader", "code_128_reader"], multiple: false },
+                locate: true
+            }, (err) => {
+                if (err) { console.error('Quagga 초기화 오류:', err); showToast(getText('camera_error')); return; }
+                Quagga.start(); 
+                isScanning = true;
+                Quagga.onDetected(onBarcodeDetected);
             });
         }
-        Quagga.onDetected(onBarcodeDetected);
-    });
-}
         
         function stopScanning() { 
             if (isScanning && typeof Quagga !== 'undefined') { Quagga.offDetected(onBarcodeDetected); Quagga.stop(); isScanning = false; } 
