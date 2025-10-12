@@ -773,16 +773,67 @@
             if (isScanning) return;
             scanLocked = false;
             detectionHistory = [];
+
             Quagga.init({
-                inputStream: { name: "Live", type: "LiveStream", target: document.querySelector('#scanner-viewport'), constraints: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 }, focusMode: "continuous" } },
-                locator: { patchSize: "medium", halfSample: true },
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#scanner-viewport'),
+                    constraints: {
+                        width: { min: 640, ideal: 1920 },
+                        height: { min: 480, ideal: 1080 },
+                        facingMode: "environment",
+                    },
+                    // ### 수정 1: 스캔 영역을 화면 중앙의 80% x 20% 영역으로 제한 ###
+                    // 이렇게 하면 스캐너가 작은 바코드에 더 집중할 수 있습니다.
+                    area: {
+                        top: "40%",
+                        right: "10%",
+                        left: "10%",
+                        bottom: "40%"
+                    }
+                },
+                // ### 수정 2: 더 정밀한 탐색을 위한 설정 최적화 ###
+                locator: {
+                    patchSize: "small", // 작은 바코드를 찾기 위해 영역 크기를 줄임
+                    halfSample: false,  // 정밀 스캔 (속도보다 품질 우선)
+                },
                 numOfWorkers: navigator.hardwareConcurrency || 4,
-                decoder: { readers: ["ean_reader", "ean_8_reader", "code_128_reader"], multiple: false },
+                decoder: {
+                    readers: ["ean_reader", "ean_8_reader", "code_128_reader"],
+                    multiple: false
+                },
                 locate: true
             }, (err) => {
-                if (err) { console.error('Quagga 초기화 오류:', err); showToast(getText('camera_error')); return; }
-                Quagga.start(); 
+                if (err) {
+                    console.error('Quagga 초기화 오류:', err);
+                    showToast(getText('camera_error'));
+                    return;
+                }
+                Quagga.start();
                 isScanning = true;
+
+                // ### 수정 3: 탭하여 초점 맞추기 기능 (정확한 스트림 사용) ###
+                // Quagga가 카메라를 시작한 후 비디오 요소를 찾아 이벤트를 연결합니다.
+                const viewport = document.querySelector('#scanner-viewport');
+                const video = viewport.querySelector('video');
+                if (video) {
+                    video.addEventListener('click', () => {
+                        try {
+                            // Quagga 라이브러리에서 현재 사용 중인 카메라 스트림을 가져옵니다.
+                            const track = Quagga.CameraAccess.getActiveTrack();
+                            if (track && typeof track.getCapabilities === 'function') {
+                                const capabilities = track.getCapabilities();
+                                if (capabilities.focusMode && capabilities.focusMode.includes('continuous')) {
+                                    track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
+                                    showToast('자동 초점 재설정');
+                                }
+                            }
+                        } catch (e) {
+                            console.warn('초점 재설정 기능이 지원되지 않는 기기입니다.', e);
+                        }
+                    });
+                }
                 Quagga.onDetected(onBarcodeDetected);
             });
         }
