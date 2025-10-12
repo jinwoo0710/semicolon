@@ -8,7 +8,7 @@
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        :root { --primary-black: #111111; --primary-white: #ffffff; --accent-gray: #777777; --light-gray: #f2f2f2; --border-color: #dddddd; --hover-color: #e8e8e8; --focus-ring: rgba(17, 17, 17, 0.15); }
+        :root { --primary-black: #111111; --primary-white: #ffffff; --accent-gray: #777777; --light-gray: #f2f2f2; --border-color: #dddddd; --hover-color: #e8e8e8; }
         body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--primary-white); color: var(--primary-black); line-height: 1.5; overflow-x: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
         .splash-screen { position: fixed; inset: 0; background: var(--primary-black); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease-out; gap: 1.5rem; color: var(--primary-white); }
         .splash-screen.fade-out { opacity: 0; pointer-events: none; }
@@ -249,9 +249,17 @@
         const AI_MODEL_INPUT_SIZE = 640;
 
         // --- AI 모델 클래스 이름 ---
-        const CLASS_NAMES = ['coffee', 'milk'];
-        const KOREAN_NAMES = { 'coffee': '커피', 'milk': '우유' };
-        const TEST_BARCODES = { 'coffee': '8801121652022', 'milk': '8801121112380' };
+        const CLASS_NAMES = [
+            'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light',
+            'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow',
+            'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
+            'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard',
+            'tennis racket', 'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple',
+            'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch',
+            'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone',
+            'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear',
+            'hair drier', 'toothbrush'
+        ];
         
         // --- 다국어 텍스트 및 지원 언어 ---
         const supportedLanguages = [
@@ -262,9 +270,9 @@
         ];
 
         const translations = {
-            ko: { appTitle: '한국 제품을<br>쉽게 찾아보세요', appSubtitle: '검색 방법을 선택하세요', searchByName: '상품명 검색', searchByNameDesc: '이름이나 브랜드로 제품 찾기', scanBarcode: '바코드 스캔', scanBarcodeDesc: '바코드로 정확하게 제품 찾기', searchByImage: 'AI 실시간 인식', searchByImageDesc: '카메라로 제품을 비추면 자동 인식', searchPlaceholder: '상품명을 입력하세요...', productDetail: '상품 상세 정보', manufacturer: '제조사', barcode: '바코드', searching: '검색 중...', noResults: '검색 결과가 없습니다', loadingInfo: '정보를 불러오는 중...', errorLoading: '정보를 불러오는 중 오류 발생', barcodeTitle: '바코드 스캐너', aiScanTitle: 'AI 실시간 인식', search: '검색', product_not_found: '상품을 찾을 수 없습니다.', camera_error: '카메라를 사용할 수 없습니다.', invalid_barcode: '유효한 바코드 번호를 입력해주세요.', preparing_dictionary: '사전 데이터 준비 중...', gemini_searching: '검색중...', translating: '번역 중...', model_loading: 'AI 모델 로딩 중...', recent_searches: '최근 검색어' },
-            en: { appTitle: 'Find Korean<br>Products Easily', appSubtitle: 'Choose your search method', searchByName: 'Search by Name', searchByNameDesc: 'Find products using their name', scanBarcode: 'Scan Barcode', scanBarcodeDesc: 'Find products with their barcode', searchByImage: 'Live AI Recognition', searchByImageDesc: 'Point your camera to recognize products', searchPlaceholder: 'Enter product name...', productDetail: 'Product Details', manufacturer: 'Manufacturer', barcode: 'Barcode', searching: 'Searching...', noResults: 'No search results found', loadingInfo: 'Loading information...', errorLoading: 'Error loading details', barcodeTitle: 'Barcode Scanner', aiScanTitle: 'Live AI Recognition', search: 'Search', product_not_found: 'Product not found.', camera_error: 'Could not access camera.', invalid_barcode: 'Please enter a valid barcode.', preparing_dictionary: 'Preparing dictionary...', gemini_searching: 'Searching...', translating: 'Translating...', model_loading: 'Loading AI model...', recent_searches: 'Recent Searches' },
-            ja: { appTitle: '韓国製品を<br>簡単に見つけよう', appSubtitle: '検索方法を選んでください', searchByName: '商品名で検索', searchByNameDesc: '商品名で製品を検索', scanBarcode: 'バーコードをスキャン', scanBarcodeDesc: 'バーコードで製品を検索', searchByImage: 'AIリアルタイム認識', searchByImageDesc: 'カメラで製品を自動認識', searchPlaceholder: '商品名を入力...', productDetail: '商品詳細', manufacturer: '製造社', barcode: 'バーコード', searching: '検索中...', noResults: '検索結果がありません', loadingInfo: '情報を読み込み中...', errorLoading: 'エラーが発生しました', barcodeTitle: 'バーコードスキャナー', aiScanTitle: 'AIリアルタイム認識', search: '検索', product_not_found: '製品が見つかりません', camera_error: 'カメラにアクセスできません', invalid_barcode: '有効なバーコードを入力してください', preparing_dictionary: '辞書を準備しています...', gemini_searching: '検索中...', translating: '翻訳中...', model_loading: 'AIモデル読み込み中...', recent_searches: '最近の検索' }
+            ko: { appTitle: '한국 제품을<br>쉽게 찾아보세요', appSubtitle: '검색 방법을 선택하세요', searchByName: '상품명 검색', searchByNameDesc: '이름이나 브랜드로 제품 찾기', scanBarcode: '바코드 스캔', scanBarcodeDesc: '바코드로 정확하게 제품 찾기', searchByImage: 'AI 실시간 인식', searchByImageDesc: '카메라로 제품을 비추면 자동 인식', searchPlaceholder: '상품명을 입력하세요...', productDetail: '상품 상세 정보', manufacturer: '제조사', barcode: '바코드', searching: '검색 중...', noResults: '검색 결과가 없습니다', loadingInfo: '정보를 불러오는 중...', errorLoading: '정보를 불러오는 중 오류 발생', barcodeTitle: '바코드 스캐너', aiScanTitle: 'AI 실시간 인식', search: '검색', product_not_found: '상품을 찾을 수 없습니다.', camera_error: '카메라를 사용할 수 없습니다.', invalid_barcode: '유효한 바코드 번호를 입력해주세요.', preparing_dictionary: '사전 데이터 준비 중...', gemini_searching: '연관 상품 검색 중...', translating: '번역 중...', model_loading: 'AI 모델 로딩 중...', recent_searches: '최근 검색어', ai_demo_toast: 'AI 인식은 데모 모델로 작동합니다. (예: 사람, 컵)' },
+            en: { appTitle: 'Find Korean<br>Products Easily', appSubtitle: 'Choose your search method', searchByName: 'Search by Name', searchByNameDesc: 'Find products using their name', scanBarcode: 'Scan Barcode', scanBarcodeDesc: 'Find products with their barcode', searchByImage: 'Live AI Recognition', searchByImageDesc: 'Point your camera to recognize products', searchPlaceholder: 'Enter product name...', productDetail: 'Product Details', manufacturer: 'Manufacturer', barcode: 'Barcode', searching: 'Searching...', noResults: 'No search results found', loadingInfo: 'Loading information...', errorLoading: 'Error loading details', barcodeTitle: 'Barcode Scanner', aiScanTitle: 'Live AI Recognition', search: 'Search', product_not_found: 'Product not found.', camera_error: 'Could not access camera.', invalid_barcode: 'Please enter a valid barcode.', preparing_dictionary: 'Preparing dictionary...', gemini_searching: 'Searching related items...', translating: 'Translating...', model_loading: 'Loading AI model...', recent_searches: 'Recent Searches', ai_demo_toast: 'AI Recognition is running on a demo model (e.g., person, cup).' },
+            ja: { appTitle: '韓国製品を<br>簡単に見つけよう', appSubtitle: '検索方法を選んでください', searchByName: '商品名で検索', searchByNameDesc: '商品名で製品を検索', scanBarcode: 'バーコードをスキャン', scanBarcodeDesc: 'バーコードで製品を検索', searchByImage: 'AIリアルタイム認識', searchByImageDesc: 'カメラで製品を自動認識', searchPlaceholder: '商品名を入力...', productDetail: '商品詳細', manufacturer: '製造社', barcode: 'バーコード', searching: '検索中...', noResults: '検索結果がありません', loadingInfo: '情報を読み込み中...', errorLoading: 'エラーが発生しました', barcodeTitle: 'バーコードスキャナー', aiScanTitle: 'AIリアルタイム認識', search: '検索', product_not_found: '製品が見つかりません', camera_error: 'カメラにアクセスできません', invalid_barcode: '有効なバーコードを入力してください', preparing_dictionary: '辞書を準備しています...', gemini_searching: '関連商品を検索中...', translating: '翻訳中...', model_loading: 'AIモデル読み込み中...', recent_searches: '最近の検索', ai_demo_toast: 'AI認識はデモモデルで動作します（例：人、カップ）。' }
         };
         
         const getText = (key) => (translations[currentLang] && translations[currentLang][key]) || (translations['ko'] && translations['ko'][key]) || key;
@@ -347,6 +355,7 @@
         function openImageSearch() {
             const modal = document.getElementById('aiScannerModal');
             if (!modal || !productModel) { showToast(getText('model_loading')); return; }
+            showToast(getText('ai_demo_toast'));
             modal.classList.add('active');
             startAIScanner();
         }
@@ -381,19 +390,18 @@
                     if (productClass && productClass !== lastDetectedClass) {
                         lastDetectedClass = productClass;
                         detectionCooldown = true;
-                        const koreanName = KOREAN_NAMES[productClass] || productClass;
                         const infoEl = document.getElementById('aiDetectionInfo');
-                        infoEl.textContent = `✅ 인식됨: ${koreanName}`;
+                        infoEl.textContent = `✅ 인식됨: ${productClass}`;
                         infoEl.style.display = 'block';
                         infoEl.style.background = 'rgba(0, 200, 0, 0.9)';
                         if (navigator.vibrate) navigator.vibrate(100);
-                        setTimeout(async () => {
-                            closeAIScanner();
-                            await getDetailsAndShow(koreanName);
+                        setTimeout(() => {
+                            detectionCooldown = false; 
+                            lastDetectedClass = null;
                         }, 2000);
                     } else if (!productClass) {
                         const infoEl = document.getElementById('aiDetectionInfo');
-                        infoEl.textContent = '제품을 화면 중앙에 맞춰주세요';
+                        infoEl.textContent = '인식할 수 있는 사물을 비춰주세요';
                         infoEl.style.display = 'block';
                         infoEl.style.background = 'rgba(0, 0, 0, 0.8)';
                     }
@@ -417,14 +425,17 @@
             const results = await productModel.run(feeds);
             const output = results[Object.keys(results)[0]];
             const predictions = output.data;
-            let maxIndex = 0, maxScore = predictions[0];
-            for (let i = 1; i < CLASS_NAMES.length; i++) {
+            let maxIndex = 0, maxScore = 0;
+            for (let i = 0; i < predictions.length; i++) {
                 if (predictions[i] > maxScore) {
                     maxScore = predictions[i];
                     maxIndex = i;
                 }
             }
-            if (maxScore >= 0.70) return CLASS_NAMES[maxIndex];
+            if (maxScore >= 0.70) {
+                console.log(`🎯 예측 결과: ${CLASS_NAMES[maxIndex]} (${(maxScore * 100).toFixed(1)}%)`);
+                return CLASS_NAMES[maxIndex];
+            }
             return null;
         }
         
@@ -601,8 +612,30 @@
             }
             const lowerCaseQuery = searchQuery.toLowerCase();
             const results = searchCache.filter(p => (p['PRDLST_NM']?.toLowerCase().includes(lowerCaseQuery)) || (p['BSSH_NM']?.toLowerCase().includes(lowerCaseQuery))).slice(0, 15);
+            
             if (results.length === 0) {
-                 container.innerHTML = `<div class="no-results">${getText('noResults')}</div>`;
+                container.innerHTML = `<div class="loading"><div class="spinner"></div>${getText('gemini_searching')}</div>`;
+                const originalKoreanList = await searchWithGeminiForList(searchQuery);
+                if (originalKoreanList && originalKoreanList.length > 0) {
+                    let displayList = originalKoreanList;
+                    if (currentLang !== 'ko') {
+                        try {
+                            const [translatedNames, translatedCompanies] = await Promise.all([
+                                translate(originalKoreanList.map(item => item.name), 'ko', currentLang, true),
+                                translate(originalKoreanList.map(item => item.manufacturer), 'ko', currentLang, true)
+                            ]);
+                            displayList = originalKoreanList.map((item, index) => ({ name: translatedNames[index], manufacturer: translatedCompanies[index] }));
+                        } catch (e) {
+                            showToast('결과 번역 실패');
+                        }
+                    }
+                    container.innerHTML = displayList.map((displayItem, index) => {
+                        const originalProductName = originalKoreanList[index].name;
+                        return `<div class="result-card" onclick="getDetailsAndShow('${originalProductName.replace(/"/g, '&quot;')}')"><h3 class="result-name">${displayItem.name}</h3><p class="result-desc">${displayItem.manufacturer}</p></div>`;
+                    }).join('');
+                } else {
+                    container.innerHTML = `<div class="no-results">${getText('noResults')}</div>`;
+                }
             } else {
                 if(currentLang === 'ko') {
                     displayResults(results);
@@ -623,6 +656,47 @@
             }
         }
 
+        async function searchWithGeminiForList(query) {
+            const prompt = `이제 검색엔진처럼 작동해봐. 예를들어 내가 진라면을 검색하면 너는 진라면 매운맛, 진라면 순한맛, 진라면 중간맛 등등 처럼 검색어 연관순으로 대답을 하는거야.이제 내가 '${query}'(으)로 검색하면 상품의 이름과 제조사를 '제품명 | 제조사' 형식으로 알려줘. 다른 설명, 숫자, 기호 없이, 한 줄에 하나씩만 나열해줘.`;
+            try {
+                const response = await fetch(GEMINI_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ "contents": [{ "parts": [{ "text": prompt }] }] })
+                });
+                if (!response.ok) throw new Error(`Gemini API Error: Status ${response.status}`);
+                const data = await response.json();
+                
+                if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
+                     throw new Error("Invalid response from Gemini.");
+                }
+                const rawText = data.candidates[0].content.parts[0].text;
+                
+                let translatedItems = await Promise.all(
+                    rawText.split('\n').map(async line => {
+                        const parts = line.split('|').map(part => part.trim());
+                        if (parts.length === 2) {
+                            let name = parts[0];
+                            let manufacturer = parts[1];
+                            if (currentLang !== 'ko') {
+                                [name, manufacturer] = await Promise.all([
+                                    translate(name, 'ko', currentLang),
+                                    translate(manufacturer, 'ko', currentLang)
+                                ]);
+                            }
+                            return { name, manufacturer };
+                        }
+                        return null;
+                    })
+                );
+                return translatedItems.filter(item => item && item.name);
+            } catch (error) {
+                console.error("Gemini list search failed:", error);
+                showToast("Failed to fetch related products.");
+                return [];
+            }
+        }
+
         function displayResults(results, isTranslated = false) {
             const container = document.getElementById('resultsContainer');
             container.innerHTML = results.map(product => {
@@ -633,9 +707,7 @@
         }
         
         async function getDetailsAndShow(productName, originalBarcode = null) {
-            // ### 수정된 부분 ###
-            addRecentSearch(productName); 
-
+            addRecentSearch(productName);
             showPage('detail');
             const content = document.getElementById('detailPageContent');
             content.innerHTML = `<div class="loading"><div class="spinner"></div>${getText('loadingInfo')}</div>`;
@@ -747,13 +819,11 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
         
-        // ### 수정된 부분 ###: localStorage 관련 함수 삭제
         function addRecentSearch(query) {
             const index = recentSearches.indexOf(query);
             if (index > -1) recentSearches.splice(index, 1);
             recentSearches.unshift(query);
             if (recentSearches.length > MAX_RECENT_SEARCHES) recentSearches.pop();
-            displayRecentSearches();
         }
 
         function displayRecentSearches() {
