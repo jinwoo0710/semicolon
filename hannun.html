@@ -79,6 +79,12 @@
         .toast { position: fixed; bottom: 2.5rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--primary-black); color: var(--primary-white); padding: 0.8rem 1.2rem; border-radius: 0; font-size: 0.9rem; z-index: 5000; opacity: 0; transition: all 0.3s ease-out; box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2); }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         .no-results { text-align: center; padding: 4rem 1.5rem; color: var(--accent-gray); font-weight: 500; font-size: 1rem; }
+        .recent-searches-title { font-size: 0.9rem; font-weight: 600; color: var(--accent-gray); padding: 1rem 1.5rem 0.5rem; }
+        .recent-searches-list { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0 1.5rem 1rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1rem; }
+        .recent-search-item { display: flex; align-items: center; gap: 0.5rem; background: var(--light-gray); padding: 0.4rem 0.8rem; border-radius: 1rem; font-size: 0.9rem; cursor: pointer; transition: background-color 0.2s ease; }
+        .recent-search-item:hover { background-color: var(--hover-color); }
+        .delete-search-btn { background: none; border: none; font-size: 1.2rem; color: var(--accent-gray); cursor: pointer; padding: 0; line-height: 1; }
+        .delete-search-btn:hover { color: var(--primary-black); }
         @media (max-width: 600px) { input[type="text"], input[type="number"] { font-size: 16px; } }
     </style>
 </head>
@@ -156,6 +162,7 @@
                 </button>
             </div>
         </div> 
+        <div id="recentSearchesContainer"></div>
         <div class="results-container" id="resultsContainer"></div> 
     </div>
 
@@ -230,6 +237,8 @@
         let pageHistory = ['home'];
         let isTranslatingCache = false;
         let productModel = null;
+        let recentSearches = [];
+        const MAX_RECENT_SEARCHES = 5;
         
         // --- 캐시 객체 ---
         const cache = {
@@ -248,14 +257,14 @@
         const supportedLanguages = [
             { code: 'ko', name: '🇰🇷 한국어' }, { code: 'en', name: '🇺🇸 English' }, { code: 'ja', name: '🇯🇵 日本語' },
             { code: 'zh-CN', name: '🇨🇳 中文 (简体)' }, { code: 'es', name: '🇪🇸 Español' }, { code: 'fr', name: '🇫🇷 Français' },
-            { code: 'de', name: '🇩🇪 Deutsch' }, { code: 'vi', name: '🇹🇭 Tiếng Việt' }, { code: 'th', name: '🇻🇳 ภาษาไทย' },
+            { code: 'de', name: '🇩🇪 Deutsch' }, { code: 'vi', name: '🇻🇳 Tiếng Việt' }, { code: 'th', name: '🇹🇭 ภาษาไทย' },
             { code: 'ru', name: '🇷🇺 Русский' }
         ];
 
         const translations = {
-            ko: { appTitle: '한국 제품을<br>쉽게 찾아보세요', appSubtitle: '검색 방법을 선택하세요', searchByName: '상품명 검색', searchByNameDesc: '이름이나 브랜드로 제품 찾기', scanBarcode: '바코드 스캔', scanBarcodeDesc: '바코드로 정확하게 제품 찾기', searchByImage: 'AI 실시간 인식', searchByImageDesc: '카메라로 제품을 비추면 자동 인식', searchPlaceholder: '상품명을 입력하세요...', productDetail: '상품 상세 정보', manufacturer: '제조사', barcode: '바코드', searching: '검색 중...', noResults: '검색 결과가 없습니다', loadingInfo: '정보를 불러오는 중...', errorLoading: '정보를 불러오는 중 오류 발생', barcodeTitle: '바코드 스캐너', aiScanTitle: 'AI 실시간 인식', search: '검색', product_not_found: '상품을 찾을 수 없습니다.', camera_error: '카메라를 사용할 수 없습니다.', invalid_barcode: '유효한 바코드 번호를 입력해주세요.', preparing_dictionary: '사전 데이터 준비 중...', gemini_searching: '검색중...', translating: '번역 중...', model_loading: 'AI 모델 로딩 중...' },
-            en: { appTitle: 'Find Korean<br>Products Easily', appSubtitle: 'Choose your search method', searchByName: 'Search by Name', searchByNameDesc: 'Find products using their name', scanBarcode: 'Scan Barcode', scanBarcodeDesc: 'Find products with their barcode', searchByImage: 'Live AI Recognition', searchByImageDesc: 'Point your camera to recognize products', searchPlaceholder: 'Enter product name...', productDetail: 'Product Details', manufacturer: 'Manufacturer', barcode: 'Barcode', searching: 'Searching...', noResults: 'No search results found', loadingInfo: 'Loading information...', errorLoading: 'Error loading details', barcodeTitle: 'Barcode Scanner', aiScanTitle: 'Live AI Recognition', search: 'Search', product_not_found: 'Product not found.', camera_error: 'Could not access camera.', invalid_barcode: 'Please enter a valid barcode.', preparing_dictionary: 'Preparing dictionary...', gemini_searching: 'Searching...', translating: 'Translating...', model_loading: 'Loading AI model...' },
-            ja: { appTitle: '韓国製品を<br>簡単に見つけよう', appSubtitle: '検索方法を選んでください', searchByName: '商品名で検索', searchByNameDesc: '商品名で製品を検索', scanBarcode: 'バーコードをスキャン', scanBarcodeDesc: 'バーコードで製品を検索', searchByImage: 'AIリアルタイム認識', searchByImageDesc: 'カメラで製品を自動認識', searchPlaceholder: '商品名を入力...', productDetail: '商品詳細', manufacturer: '製造社', barcode: 'バーコード', searching: '検索中...', noResults: '検索結果がありません', loadingInfo: '情報を読み込み中...', errorLoading: 'エラーが発生しました', barcodeTitle: 'バーコードスキャナー', aiScanTitle: 'AIリアルタイム認識', search: '検索', product_not_found: '製品が見つかりません', camera_error: 'カメラにアクセスできません', invalid_barcode: '有効なバー코드を入力してください', preparing_dictionary: '辞書を準備しています...', gemini_searching: '検索中...', translating: '翻訳中...', model_loading: 'AIモデル読み込み中...'}
+            ko: { appTitle: '한국 제품을<br>쉽게 찾아보세요', appSubtitle: '검색 방법을 선택하세요', searchByName: '상품명 검색', searchByNameDesc: '이름이나 브랜드로 제품 찾기', scanBarcode: '바코드 스캔', scanBarcodeDesc: '바코드로 정확하게 제품 찾기', searchByImage: 'AI 실시간 인식', searchByImageDesc: '카메라로 제품을 비추면 자동 인식', searchPlaceholder: '상품명을 입력하세요...', productDetail: '상품 상세 정보', manufacturer: '제조사', barcode: '바코드', searching: '검색 중...', noResults: '검색 결과가 없습니다', loadingInfo: '정보를 불러오는 중...', errorLoading: '정보를 불러오는 중 오류 발생', barcodeTitle: '바코드 스캐너', aiScanTitle: 'AI 실시간 인식', search: '검색', product_not_found: '상품을 찾을 수 없습니다.', camera_error: '카메라를 사용할 수 없습니다.', invalid_barcode: '유효한 바코드 번호를 입력해주세요.', preparing_dictionary: '사전 데이터 준비 중...', gemini_searching: '검색중...', translating: '번역 중...', model_loading: 'AI 모델 로딩 중...', recent_searches: '최근 검색어' },
+            en: { appTitle: 'Find Korean<br>Products Easily', appSubtitle: 'Choose your search method', searchByName: 'Search by Name', searchByNameDesc: 'Find products using their name', scanBarcode: 'Scan Barcode', scanBarcodeDesc: 'Find products with their barcode', searchByImage: 'Live AI Recognition', searchByImageDesc: 'Point your camera to recognize products', searchPlaceholder: 'Enter product name...', productDetail: 'Product Details', manufacturer: 'Manufacturer', barcode: 'Barcode', searching: 'Searching...', noResults: 'No search results found', loadingInfo: 'Loading information...', errorLoading: 'Error loading details', barcodeTitle: 'Barcode Scanner', aiScanTitle: 'Live AI Recognition', search: 'Search', product_not_found: 'Product not found.', camera_error: 'Could not access camera.', invalid_barcode: 'Please enter a valid barcode.', preparing_dictionary: 'Preparing dictionary...', gemini_searching: 'Searching...', translating: 'Translating...', model_loading: 'Loading AI model...', recent_searches: 'Recent Searches' },
+            ja: { appTitle: '韓国製品を<br>簡単に見つけよう', appSubtitle: '検索方法を選んでください', searchByName: '商品名で検索', searchByNameDesc: '商品名で製品を検索', scanBarcode: 'バーコードをスキャン', scanBarcodeDesc: 'バーコードで製品を検索', searchByImage: 'AIリアルタイム認識', searchByImageDesc: 'カメラで製品を自動認識', searchPlaceholder: '商品名を入力...', productDetail: '商品詳細', manufacturer: '製造社', barcode: 'バーコード', searching: '検索中...', noResults: '検索結果がありません', loadingInfo: '情報を読み込み中...', errorLoading: 'エラーが発生しました', barcodeTitle: 'バーコードスキャナー', aiScanTitle: 'AIリアルタイム認識', search: '検索', product_not_found: '製品が見つかりません', camera_error: 'カメラにアクセスできません', invalid_barcode: '有効なバーコードを入力してください', preparing_dictionary: '辞書を準備しています...', gemini_searching: '検索中...', translating: '翻訳中...', model_loading: 'AIモデル読み込み中...', recent_searches: '最近の検索' }
         };
         
         const getText = (key) => (translations[currentLang] && translations[currentLang][key]) || (translations['ko'] && translations['ko'][key]) || key;
@@ -459,6 +468,7 @@
             }
             if (pageId === 'searchResults') {
                 if (isTranslatingCache) document.getElementById('resultsContainer').innerHTML = `<div class="loading"><div class="spinner"></div>${getText('preparing_dictionary')}</div>`;
+                displayRecentSearches();
                 document.getElementById('searchInput').focus();
             }
         }
@@ -623,6 +633,9 @@
         }
         
         async function getDetailsAndShow(productName, originalBarcode = null) {
+            // ### 수정된 부분 ###
+            addRecentSearch(productName); 
+
             showPage('detail');
             const content = document.getElementById('detailPageContent');
             content.innerHTML = `<div class="loading"><div class="spinner"></div>${getText('loadingInfo')}</div>`;
@@ -734,6 +747,42 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
         
+        // ### 수정된 부분 ###: localStorage 관련 함수 삭제
+        function addRecentSearch(query) {
+            const index = recentSearches.indexOf(query);
+            if (index > -1) recentSearches.splice(index, 1);
+            recentSearches.unshift(query);
+            if (recentSearches.length > MAX_RECENT_SEARCHES) recentSearches.pop();
+            displayRecentSearches();
+        }
+
+        function displayRecentSearches() {
+            const container = document.getElementById('recentSearchesContainer');
+            if (!container || recentSearches.length === 0) {
+                if(container) container.innerHTML = '';
+                return;
+            }
+            const listItems = recentSearches.map(term => `
+                <div class="recent-search-item" onclick="searchFromRecent('${term.replace(/'/g, "\\'")}')">
+                    <span>${term}</span>
+                    <button class="delete-search-btn" onclick="removeRecentSearch(event, '${term.replace(/'/g, "\\'")}')">×</button>
+                </div>
+            `).join('');
+            container.innerHTML = `
+                <h4 class="recent-searches-title">${getText('recent_searches')}</h4>
+                <div class="recent-searches-list">${listItems}</div>`;
+        }
+
+        function searchFromRecent(term) {
+            getDetailsAndShow(term);
+        }
+
+        function removeRecentSearch(event, term) {
+            event.stopPropagation();
+            recentSearches = recentSearches.filter(t => t !== term);
+            displayRecentSearches();
+        }
+        
         let isScanning = false, scanLocked = false, detectionHistory = [];
         const STABLE_COUNT = 3;
         
@@ -773,54 +822,20 @@
             if (isScanning) return;
             scanLocked = false;
             detectionHistory = [];
-
             Quagga.init({
-                inputStream: {
-                    name: "Live",
-                    type: "LiveStream",
-                    target: document.querySelector('#scanner-viewport'),
-                    constraints: {
-                        width: { min: 640, ideal: 1920 },
-                        height: { min: 480, ideal: 1080 },
-                        facingMode: "environment",
-                    },
-                    // ### 수정 1: 스캔 영역을 화면 중앙의 80% x 20% 영역으로 제한 ###
-                    // 이렇게 하면 스캐너가 작은 바코드에 더 집중할 수 있습니다.
-                    area: {
-                        top: "40%",
-                        right: "10%",
-                        left: "10%",
-                        bottom: "40%"
-                    }
-                },
-                // ### 수정 2: 더 정밀한 탐색을 위한 설정 최적화 ###
-                locator: {
-                    patchSize: "small", // 작은 바코드를 찾기 위해 영역 크기를 줄임
-                    halfSample: false,  // 정밀 스캔 (속도보다 품질 우선)
-                },
+                inputStream: { name: "Live", type: "LiveStream", target: document.querySelector('#scanner-viewport'), constraints: { width: { min: 640, ideal: 1920 }, height: { min: 480, ideal: 1080 }, facingMode: "environment" }, area: { top: "40%", right: "10%", left: "10%", bottom: "40%" } },
+                locator: { patchSize: "small", halfSample: false },
                 numOfWorkers: navigator.hardwareConcurrency || 4,
-                decoder: {
-                    readers: ["ean_reader", "ean_8_reader", "code_128_reader"],
-                    multiple: false
-                },
+                decoder: { readers: ["ean_reader", "ean_8_reader", "code_128_reader"], multiple: false },
                 locate: true
             }, (err) => {
-                if (err) {
-                    console.error('Quagga 초기화 오류:', err);
-                    showToast(getText('camera_error'));
-                    return;
-                }
-                Quagga.start();
+                if (err) { console.error('Quagga 초기화 오류:', err); showToast(getText('camera_error')); return; }
+                Quagga.start(); 
                 isScanning = true;
-
-                // ### 수정 3: 탭하여 초점 맞추기 기능 (정확한 스트림 사용) ###
-                // Quagga가 카메라를 시작한 후 비디오 요소를 찾아 이벤트를 연결합니다.
-                const viewport = document.querySelector('#scanner-viewport');
-                const video = viewport.querySelector('video');
+                const video = document.querySelector('#scanner-viewport video');
                 if (video) {
                     video.addEventListener('click', () => {
                         try {
-                            // Quagga 라이브러리에서 현재 사용 중인 카메라 스트림을 가져옵니다.
                             const track = Quagga.CameraAccess.getActiveTrack();
                             if (track && typeof track.getCapabilities === 'function') {
                                 const capabilities = track.getCapabilities();
@@ -829,9 +844,7 @@
                                     showToast('자동 초점 재설정');
                                 }
                             }
-                        } catch (e) {
-                            console.warn('초점 재설정 기능이 지원되지 않는 기기입니다.', e);
-                        }
+                        } catch (e) { console.warn('초점 재설정 기능이 지원되지 않는 기기입니다.', e); }
                     });
                 }
                 Quagga.onDetected(onBarcodeDetected);
