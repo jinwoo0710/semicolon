@@ -85,6 +85,9 @@
         .recent-search-item:hover { background-color: var(--hover-color); }
         .delete-search-btn { background: none; border: none; font-size: 1.2rem; color: var(--accent-gray); cursor: pointer; padding: 0; line-height: 1; }
         .delete-search-btn:hover { color: var(--primary-black); }
+        .credit-footer { display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+        .credit-logo { height: 2rem; width: auto; }
+        .credit-text { font-size: 1rem; font-weight: 500; color: var(--accent-gray); }
         @media (max-width: 600px) { input[type="text"], input[type="number"] { font-size: 16px; } }
     </style>
 </head>
@@ -147,6 +150,10 @@
                     </div>
                 </div>
             </div> 
+            <div class="credit-footer">
+                <img src="ditlogo.png" alt="DIT Logo" class="credit-logo">
+                <p class="credit-text">컴퓨터소프트웨어과</p>
+            </div>
         </div> 
     </main>
 
@@ -657,42 +664,35 @@
         }
 
         async function searchWithGeminiForList(query) {
+            const cacheKey = `${query}_gemini_list`;
+            if (cache.geminiLists[cacheKey]) return cache.geminiLists[cacheKey];
+            
             const prompt = `이제 검색엔진처럼 작동해봐. 예를들어 내가 진라면을 검색하면 너는 진라면 매운맛, 진라면 순한맛, 진라면 중간맛 등등 처럼 검색어 연관순으로 대답을 하는거야.이제 내가 '${query}'(으)로 검색하면 상품의 이름과 제조사를 '제품명 | 제조사' 형식으로 알려줘. 다른 설명, 숫자, 기호 없이, 한 줄에 하나씩만 나열해줘.`;
             try {
-                const response = await fetch(GEMINI_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ "contents": [{ "parts": [{ "text": prompt }] }] })
+                const response = await fetch(GEMINI_URL, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ "contents": [{ "parts": [{ "text": prompt }] }], "generationConfig": { "temperature": 0.3, "maxOutputTokens": 500 } }) 
                 });
-                if (!response.ok) throw new Error(`Gemini API Error: Status ${response.status}`);
+                if (!response.ok) throw new Error(`Gemini API 오류: Status ${response.status}`);
                 const data = await response.json();
                 
-                if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
-                     throw new Error("Invalid response from Gemini.");
+                if (!data.candidates || data.candidates.length === 0 || !data.candidates[0].content?.parts?.[0]?.text) {
+                    console.warn("Gemini로부터 유효한 답변(연관 검색어 목록)을 받지 못했습니다.", data);
+                    return [];
                 }
+
                 const rawText = data.candidates[0].content.parts[0].text;
+                const result = rawText.split('\n').map(line => {
+                    const parts = line.split('|').map(part => part.trim());
+                    return parts.length === 2 ? { name: parts[0], manufacturer: parts[1] } : null;
+                }).filter(item => item && item.name);
                 
-                let translatedItems = await Promise.all(
-                    rawText.split('\n').map(async line => {
-                        const parts = line.split('|').map(part => part.trim());
-                        if (parts.length === 2) {
-                            let name = parts[0];
-                            let manufacturer = parts[1];
-                            if (currentLang !== 'ko') {
-                                [name, manufacturer] = await Promise.all([
-                                    translate(name, 'ko', currentLang),
-                                    translate(manufacturer, 'ko', currentLang)
-                                ]);
-                            }
-                            return { name, manufacturer };
-                        }
-                        return null;
-                    })
-                );
-                return translatedItems.filter(item => item && item.name);
+                cache.geminiLists[cacheKey] = result;
+                return result;
             } catch (error) {
-                console.error("Gemini list search failed:", error);
-                showToast("Failed to fetch related products.");
+                console.error("Gemini 목록 검색 실패:", error);
+                showToast("연관 상품 목록을 가져오는데 실패했습니다.");
                 return [];
             }
         }
