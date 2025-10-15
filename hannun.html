@@ -65,10 +65,33 @@
         #scanner-viewport, #scanner-viewport video, #scanner-viewport canvas { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
         #ai-scanner-viewport { width: 100%; height: 100%; position: relative; }
         #ai-scanner-video { width: 100%; height: 100%; object-fit: cover; }
+        #ai-overlay-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         .scan-overlay { position: absolute; inset: 0; pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .scan-guide { width: 70%; max-width: 300px; height: 120px; position: relative; border: 2px solid #00FF00; }
+        .scan-guide-ai { width: 85%; max-width: 400px; height: 200px; position: relative; border: none; }
         .scan-line { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: #00FF00; animation: scan 2s cubic-bezier(0.5, 0, 0.5, 1) infinite; box-shadow: 0 0 8px #00FF00; }
         @keyframes scan { 0% { transform: translateY(0); } 100% { transform: translateY(118px); } }
+        .scan-corner { position: absolute; width: 40px; height: 40px; border: 3px solid #00FF00; animation: cornerPulse 2s ease-in-out infinite; }
+        .scan-corner.top-left { top: 0; left: 0; border-right: none; border-bottom: none; }
+        .scan-corner.top-right { top: 0; right: 0; border-left: none; border-bottom: none; }
+        .scan-corner.bottom-left { bottom: 0; left: 0; border-right: none; border-top: none; }
+        .scan-corner.bottom-right { bottom: 0; right: 0; border-left: none; border-top: none; }
+        @keyframes cornerPulse { 0%, 100% { opacity: 0.6; box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); } 50% { opacity: 1; box-shadow: 0 0 20px rgba(0, 255, 0, 0.8); } }
+        .scan-lines { position: absolute; inset: 0; overflow: hidden; }
+        .scan-line-horizontal { position: absolute; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent 0%, #00FF00 20%, #00FF00 80%, transparent 100%); box-shadow: 0 0 10px #00FF00; animation: scanHorizontal 3s ease-in-out infinite; }
+        .scan-line-vertical { position: absolute; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, transparent 0%, #00FF00 20%, #00FF00 80%, transparent 100%); box-shadow: 0 0 10px #00FF00; animation: scanVertical 2.5s ease-in-out infinite; animation-delay: 0.5s; }
+        @keyframes scanHorizontal { 0%, 100% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        @keyframes scanVertical { 0%, 100% { left: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { left: 100%; opacity: 0; } }
+        .scan-particles { position: absolute; inset: 0; pointer-events: none; }
+        .particle { position: absolute; width: 4px; height: 4px; background: #00FF00; border-radius: 50%; opacity: 0; animation: particleFloat 3s ease-in-out infinite; box-shadow: 0 0 6px #00FF00; }
+        .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 30%; animation-delay: 0.5s; }
+        .particle:nth-child(3) { left: 50%; animation-delay: 1s; }
+        .particle:nth-child(4) { left: 70%; animation-delay: 1.5s; }
+        .particle:nth-child(5) { left: 90%; animation-delay: 2s; }
+        @keyframes particleFloat { 0% { top: 100%; opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { top: 0; opacity: 0; } }
+        .scan-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(0, 255, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 0, 0.1) 1px, transparent 1px); background-size: 20px 20px; animation: gridPulse 2s ease-in-out infinite; }
+        @keyframes gridPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
         .ai-detection-info { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.9rem; font-weight: 600; }
         .manual-input { padding: 1.5rem; background: var(--light-gray); border-top: 1px solid var(--border-color); }
         .barcode-input { width: 100%; padding: 0.8rem 1rem; border: 2px solid var(--primary-black); border-radius: 0; font-size: 1rem; text-align: center; margin-bottom: 0.8rem; outline: none; background-color: var(--primary-white); transition: all 0.2s ease-out; box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.1); }
@@ -195,8 +218,8 @@
                     <div class="scan-guide"> 
                         <div class="scan-line"></div> 
                     </div> 
-                </div> 
-            </div> 
+                </div>
+            </div>
             <div class="manual-input"> 
                 <input type="number" class="barcode-input" id="manualBarcode" placeholder="바코드 번호 직접 입력"> 
                 <button class="search-barcode-btn" id="searchBarcodeBtn" onclick="searchByManualBarcode()">검색</button> 
@@ -213,11 +236,7 @@
             <div class="scanner-container" id="ai-scanner-container">
                 <div id="ai-scanner-viewport">
                     <video id="ai-scanner-video" autoplay playsinline></video>
-                </div>
-                <div class="scan-overlay">
-                    <div class="scan-guide">
-                         <div class="bottom-corners"></div>
-                    </div>
+                    <canvas id="ai-overlay-canvas"></canvas>
                 </div>
                 <div class="ai-detection-info" id="aiDetectionInfo" style="display:none;"></div>
             </div>
@@ -257,16 +276,22 @@
 
         // --- AI 모델 클래스 이름 ---
         const CLASS_NAMES = [
-            'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light',
-            'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow',
-            'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
-            'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard',
-            'tennis racket', 'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple',
-            'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch',
-            'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone',
-            'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear',
-            'hair drier', 'toothbrush'
+            'chocopie',   // 0
+            'tonk',       // 1  
+            'coffee',     // 2
+            'milk',       // 3
+            'getorade',   // 4
+            'almond'      // 5
         ];
+
+        const CLASS_BARCODES = {
+            'chocopie': '8801117535398',
+            'tonk': '8801117269203',
+            'coffee': '8801121652022',
+            'milk': '8801121112380',
+            'getorade': '8801056052256',
+            'almond': '' // 비워둠 - 나중에 수정 가능
+        };
         
         // --- 다국어 텍스트 및 지원 언어 ---
         const supportedLanguages = [
@@ -277,9 +302,9 @@
         ];
 
         const translations = {
-            ko: { appTitle: '한국 제품을<br>쉽게 찾아보세요', appSubtitle: '검색 방법을 선택하세요', searchByName: '상품명 검색', searchByNameDesc: '이름이나 브랜드로 제품 찾기', scanBarcode: '바코드 스캔', scanBarcodeDesc: '바코드로 정확하게 제품 찾기', searchByImage: 'AI 실시간 인식', searchByImageDesc: '카메라로 제품을 비추면 자동 인식', searchPlaceholder: '상품명을 입력하세요...', productDetail: '상품 상세 정보', manufacturer: '제조사', barcode: '바코드', searching: '검색 중...', noResults: '검색 결과가 없습니다', loadingInfo: '정보를 불러오는 중...', errorLoading: '정보를 불러오는 중 오류 발생', barcodeTitle: '바코드 스캐너', aiScanTitle: 'AI 실시간 인식', search: '검색', product_not_found: '상품을 찾을 수 없습니다.', camera_error: '카메라를 사용할 수 없습니다.', invalid_barcode: '유효한 바코드 번호를 입력해주세요.', preparing_dictionary: '사전 데이터 준비 중...', gemini_searching: '연관 상품 검색 중...', translating: '번역 중...', model_loading: 'AI 모델 로딩 중...', recent_searches: '최근 검색어', ai_demo_toast: 'AI 인식은 데모 모델로 작동합니다. (예: 사람, 컵)' },
-            en: { appTitle: 'Find Korean<br>Products Easily', appSubtitle: 'Choose your search method', searchByName: 'Search by Name', searchByNameDesc: 'Find products using their name', scanBarcode: 'Scan Barcode', scanBarcodeDesc: 'Find products with their barcode', searchByImage: 'Live AI Recognition', searchByImageDesc: 'Point your camera to recognize products', searchPlaceholder: 'Enter product name...', productDetail: 'Product Details', manufacturer: 'Manufacturer', barcode: 'Barcode', searching: 'Searching...', noResults: 'No search results found', loadingInfo: 'Loading information...', errorLoading: 'Error loading details', barcodeTitle: 'Barcode Scanner', aiScanTitle: 'Live AI Recognition', search: 'Search', product_not_found: 'Product not found.', camera_error: 'Could not access camera.', invalid_barcode: 'Please enter a valid barcode.', preparing_dictionary: 'Preparing dictionary...', gemini_searching: 'Searching related items...', translating: 'Translating...', model_loading: 'Loading AI model...', recent_searches: 'Recent Searches', ai_demo_toast: 'AI Recognition is running on a demo model (e.g., person, cup).' },
-            ja: { appTitle: '韓国製品を<br>簡単に見つけよう', appSubtitle: '検索方法を選んでください', searchByName: '商品名で検索', searchByNameDesc: '商品名で製品を検索', scanBarcode: 'バーコードをスキャン', scanBarcodeDesc: 'バーコードで製品を検索', searchByImage: 'AIリアルタイム認識', searchByImageDesc: 'カメラで製品を自動認識', searchPlaceholder: '商品名を入力...', productDetail: '商品詳細', manufacturer: '製造社', barcode: 'バーコード', searching: '検索中...', noResults: '検索結果がありません', loadingInfo: '情報を読み込み中...', errorLoading: 'エラーが発生しました', barcodeTitle: 'バーコードスキャナー', aiScanTitle: 'AIリアルタイム認識', search: '検索', product_not_found: '製品が見つかりません', camera_error: 'カメラにアクセスできません', invalid_barcode: '有効なバーコードを入力してください', preparing_dictionary: '辞書を準備しています...', gemini_searching: '関連商品を検索中...', translating: '翻訳中...', model_loading: 'AIモデル読み込み中...', recent_searches: '最近の検索', ai_demo_toast: 'AI認識はデモモデルで動作します（例：人、カップ）。' }
+            ko: { appTitle: '한국 제품을<br>쉽게 찾아보세요', appSubtitle: '검색 방법을 선택하세요', searchByName: '상품명 검색', searchByNameDesc: '이름이나 브랜드로 제품 찾기', scanBarcode: '바코드 스캔', scanBarcodeDesc: '바코드로 정확하게 제품 찾기', searchByImage: 'AI 실시간 인식', searchByImageDesc: '카메라로 제품을 비추면 자동 인식', searchPlaceholder: '상품명을 입력하세요...', productDetail: '상품 상세 정보', manufacturer: '제조사', barcode: '바코드', searching: '검색 중...', noResults: '검색 결과가 없습니다', loadingInfo: '정보를 불러오는 중...', errorLoading: '정보를 불러오는 중 오류 발생', barcodeTitle: '바코드 스캐너', aiScanTitle: 'AI 실시간 인식', search: '검색', product_not_found: '상품을 찾을 수 없습니다.', camera_error: '카메라를 사용할 수 없습니다.', invalid_barcode: '유효한 바코드 번호를 입력해주세요.', preparing_dictionary: '사전 데이터 준비 중...', gemini_searching: '연관 상품 검색 중...', translating: '번역 중...', model_loading: 'AI 모델 로딩 중...', recent_searches: '최근 검색어', ai_demo_toast: 'AI 인식은 데모 모델로 작동합니다.' },
+            en: { appTitle: 'Find Korean<br>Products Easily', appSubtitle: 'Choose your search method', searchByName: 'Search by Name', searchByNameDesc: 'Find products using their name', scanBarcode: 'Scan Barcode', scanBarcodeDesc: 'Find products with their barcode', searchByImage: 'Live AI Recognition', searchByImageDesc: 'Point your camera to recognize products', searchPlaceholder: 'Enter product name...', productDetail: 'Product Details', manufacturer: 'Manufacturer', barcode: 'Barcode', searching: 'Searching...', noResults: 'No search results found', loadingInfo: 'Loading information...', errorLoading: 'Error loading details', barcodeTitle: 'Barcode Scanner', aiScanTitle: 'Live AI Recognition', search: 'Search', product_not_found: 'Product not found.', camera_error: 'Could not access camera.', invalid_barcode: 'Please enter a valid barcode.', preparing_dictionary: 'Preparing dictionary...', gemini_searching: 'Searching related items...', translating: 'Translating...', model_loading: 'Loading AI model...', recent_searches: 'Recent Searches', ai_demo_toast: 'AI Recognition is running on a demo model.' },
+            ja: { appTitle: '韓国製品を<br>簡単に見つけよう', appSubtitle: '検索方法を選んでください', searchByName: '商品名で検索', searchByNameDesc: '商品名で製品を検索', scanBarcode: 'バーコードをスキャン', scanBarcodeDesc: 'バーコードで製品を検索', searchByImage: 'AIリアルタイム認識', searchByImageDesc: 'カメラで製品を自動認識', searchPlaceholder: '商品名を入力...', productDetail: '商品詳細', manufacturer: '製造社', barcode: 'バーコード', searching: '検索中...', noResults: '検索結果がありません', loadingInfo: '情報を読み込み中...', errorLoading: 'エラーが発生しました', barcodeTitle: 'バーコードスキャナー', aiScanTitle: 'AIリアルタイム認識', search: '検索', product_not_found: '製品が見つかりません', camera_error: 'カメラにアクセスできません', invalid_barcode: '有効なバーコードを入力してください', preparing_dictionary: '辞書を準備しています...', gemini_searching: '関連商品を検索中...', translating: '翻訳中...', model_loading: 'AIモデル読み込み中...', recent_searches: '最近の検索', ai_demo_toast: 'AI認識はデモモデルで動作します。' }
         };
         
         const getText = (key) => (translations[currentLang] && translations[currentLang][key]) || (translations['ko'] && translations['ko'][key]) || key;
@@ -393,20 +418,65 @@
             ctx.drawImage(video, x, y, video.videoWidth * scale, video.videoHeight * scale);
             canvas.toBlob(async (blob) => {
                 try {
-                    const productClass = await recognizeProductFromImage(blob);
-                    if (productClass && productClass !== lastDetectedClass) {
-                        lastDetectedClass = productClass;
-                        detectionCooldown = true;
-                        const infoEl = document.getElementById('aiDetectionInfo');
-                        infoEl.textContent = `✅ 인식됨: ${productClass}`;
-                        infoEl.style.display = 'block';
-                        infoEl.style.background = 'rgba(0, 200, 0, 0.9)';
-                        if (navigator.vibrate) navigator.vibrate(100);
-                        setTimeout(() => {
-                            detectionCooldown = false; 
-                            lastDetectedClass = null;
-                        }, 2000);
-                    } else if (!productClass) {
+                    const detections = await recognizeProductFromImage(blob);
+                    
+                    // 오버레이 캔버스 가져오기
+                    const overlayCanvas = document.getElementById('ai-overlay-canvas');
+                    const overlayCtx = overlayCanvas.getContext('2d');
+                    overlayCanvas.width = video.videoWidth;
+                    overlayCanvas.height = video.videoHeight;
+                    overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+                    
+                    if (detections && detections.length > 0) {
+                        // 바운딩 박스 그리기
+                        detections.forEach(det => {
+                            const scaleX = video.videoWidth / AI_MODEL_INPUT_SIZE;
+                            const scaleY = video.videoHeight / AI_MODEL_INPUT_SIZE;
+                            
+                            const boxX = (det.box.x - det.box.w / 2) * scaleX;
+                            const boxY = (det.box.y - det.box.h / 2) * scaleY;
+                            const boxW = det.box.w * scaleX;
+                            const boxH = det.box.h * scaleY;
+                            
+                            // 박스 그리기
+                            overlayCtx.strokeStyle = '#00FF00';
+                            overlayCtx.lineWidth = 3;
+                            overlayCtx.strokeRect(boxX, boxY, boxW, boxH);
+                            
+                            // 라벨 배경
+                            overlayCtx.fillStyle = 'rgba(0, 255, 0, 0.8)';
+                            overlayCtx.fillRect(boxX, boxY - 25, boxW, 25);
+                            
+                            // 라벨 텍스트
+                            overlayCtx.fillStyle = '#000';
+                            overlayCtx.font = 'bold 16px Arial';
+                            overlayCtx.fillText(`${det.className} ${(det.confidence * 100).toFixed(0)}%`, boxX + 5, boxY - 7);
+                        });
+                        
+                        const topDetection = detections[0];
+                        if (topDetection.className !== lastDetectedClass) {
+                            lastDetectedClass = topDetection.className;
+                            detectionCooldown = true;
+                            const infoEl = document.getElementById('aiDetectionInfo');
+                            infoEl.textContent = `✅ 인식됨: ${topDetection.className}`;
+                            infoEl.style.display = 'block';
+                            infoEl.style.background = 'rgba(0, 200, 0, 0.9)';
+                            if (navigator.vibrate) navigator.vibrate(100);
+                            
+                            // 바코드 가져오기
+                            const barcode = CLASS_BARCODES[topDetection.className];
+                            
+                            // 바코드가 있으면 검색, 없으면 알림
+                            setTimeout(() => {
+                                closeAIScanner();
+                                if (barcode) {
+                                    findProductByBarcode(barcode);
+                                } else {
+                                    showToast(`${topDetection.className}의 바코드가 등록되지 않았습니다.`);
+                                }
+                            }, 1000); // 1초 후 자동 검색
+                        }
+                    } else {
                         const infoEl = document.getElementById('aiDetectionInfo');
                         infoEl.textContent = '인식할 수 있는 사물을 비춰주세요';
                         infoEl.style.display = 'block';
@@ -427,23 +497,131 @@
         
         async function recognizeProductFromImage(imageFile) {
             if (!productModel) throw new Error('모델이 로드되지 않았습니다');
+            
             const tensor = await preprocessImage(imageFile);
             const feeds = { images: tensor };
             const results = await productModel.run(feeds);
+            
+            // 모델 출력 가져오기
             const output = results[Object.keys(results)[0]];
-            const predictions = output.data;
-            let maxIndex = 0, maxScore = 0;
-            for (let i = 0; i < predictions.length; i++) {
-                if (predictions[i] > maxScore) {
-                    maxScore = predictions[i];
-                    maxIndex = i;
+            const dims = output.dims; // [1, 7, 10, 8400]
+            
+            // 데이터를 올바른 형태로 재구성: [8400, 11]
+            const numBoxes = 8400;
+            const numClasses = 6;
+            const boxData = new Float32Array(numBoxes * (4 + 1 + numClasses));
+            
+            // Shape [1, 7, 10, 8400] → [8400, 11]로 변환
+            // Sigmoid 함수 정의
+            const sigmoid = (x) => 1 / (1 + Math.exp(-x));
+            
+            // Shape [1, 7, 10, 8400] → [8400, 11]로 변환 (Sigmoid 적용)
+            const rawData = output.data;
+            for (let i = 0; i < numBoxes; i++) {
+                // x, y, w, h (4개) - 좌표는 그대로
+                for (let j = 0; j < 4; j++) {
+                    boxData[i * 11 + j] = rawData[j * numBoxes + i];
+                }
+                // confidence (1개) - Sigmoid 적용
+                boxData[i * 11 + 4] = sigmoid(rawData[4 * numBoxes + i]);
+                // class scores (6개) - Sigmoid 적용
+                for (let j = 0; j < numClasses; j++) {
+                    boxData[i * 11 + 5 + j] = sigmoid(rawData[(5 + j) * numBoxes + i]);
                 }
             }
-            if (maxScore >= 0.70) {
-                console.log(`🎯 예측 결과: ${CLASS_NAMES[maxIndex]} (${(maxScore * 100).toFixed(1)}%)`);
-                return CLASS_NAMES[maxIndex];
+            
+            // 탐지 결과 파싱
+            const detections = [];
+            const confThreshold = 0.5; // 신뢰도 임계값
+            
+            for (let i = 0; i < numBoxes; i++) {
+                const offset = i * 11;
+                const objectness = boxData[offset + 4];
+                
+                if (objectness < confThreshold) continue;
+                
+                // 가장 높은 클래스 확률 찾기
+                let maxClassScore = 0;
+                let maxClassIndex = 0;
+                
+                for (let j = 0; j < numClasses; j++) {
+                    const classScore = boxData[offset + 5 + j];
+                    if (classScore > maxClassScore) {
+                        maxClassScore = classScore;
+                        maxClassIndex = j;
+                    }
+                }
+                
+                const finalScore = objectness * maxClassScore;
+                
+                if (finalScore >= confThreshold) {
+                    const x = boxData[offset + 0];
+                    const y = boxData[offset + 1];
+                    const w = boxData[offset + 2];
+                    const h = boxData[offset + 3];
+                    
+                    detections.push({
+                        class: maxClassIndex,
+                        className: CLASS_NAMES[maxClassIndex],
+                        confidence: finalScore,
+                        box: { x, y, w, h }
+                    });
+                }
             }
-            return null;
+            
+            // NMS (Non-Maximum Suppression) 적용
+            const nmsDetections = applyNMS(detections, 0.45);
+            
+            console.log(`🎯 탐지 결과: ${nmsDetections.length}개 객체 발견`);
+            nmsDetections.forEach(det => {
+                console.log(`  - ${det.className}: ${(det.confidence * 100).toFixed(1)}%`);
+            });
+            
+            return nmsDetections;
+        }
+        
+        // NMS (Non-Maximum Suppression) 함수 추가
+        function applyNMS(detections, iouThreshold) {
+            // 신뢰도 순으로 정렬
+            detections.sort((a, b) => b.confidence - a.confidence);
+            
+            const keep = [];
+            const suppressed = new Set();
+            
+            for (let i = 0; i < detections.length; i++) {
+                if (suppressed.has(i)) continue;
+                
+                keep.push(detections[i]);
+                
+                for (let j = i + 1; j < detections.length; j++) {
+                    if (suppressed.has(j)) continue;
+                    
+                    // 같은 클래스만 비교
+                    if (detections[i].class !== detections[j].class) continue;
+                    
+                    const iou = calculateIoU(detections[i].box, detections[j].box);
+                    if (iou > iouThreshold) {
+                        suppressed.add(j);
+                    }
+                }
+            }
+            
+            return keep;
+        }
+        
+        // IoU (Intersection over Union) 계산
+        function calculateIoU(box1, box2) {
+            const x1 = Math.max(box1.x - box1.w / 2, box2.x - box2.w / 2);
+            const y1 = Math.max(box1.y - box1.h / 2, box2.y - box2.h / 2);
+            const x2 = Math.min(box1.x + box1.w / 2, box2.x + box2.w / 2);
+            const y2 = Math.min(box1.y + box1.h / 2, box2.y + box2.h / 2);
+            
+            const intersection = Math.max(0, x2 - x1) * Math.max(0, y2 - y1);
+            const area1 = box1.w * box1.h;
+            const area2 = box2.w * box2.h;
+            const union = area1 + area2 - intersection;
+            
+            return intersection / union;
         }
         
         async function preprocessImage(imageFile) {
@@ -722,22 +900,38 @@
             try {
                 const cacheKey = `${cleanName}_ko`;
                 let details = cache.details[cacheKey];
+                
+                // API에서 바코드 찾기
+                let apiBarcode = originalBarcode;
+                if (!apiBarcode && searchCache) {
+                    const apiProduct = searchCache.find(p => p.PRDLST_NM === cleanName);
+                    if (apiProduct && apiProduct.BAR_CD) {
+                        apiBarcode = apiProduct.BAR_CD;
+                    }
+                }
+                
                 if (!details) {
                     details = await getGeminiProductDetails(cleanName);
                     if (details) cache.details[cacheKey] = details;
                 }
+                
                 if (details) {
-                    if(originalBarcode) {
-                        details['바코드'] = originalBarcode;
-                        details['바코드 번호'] = originalBarcode;
+                    // 혹시 모를 Gemini 바코드 제거
+                    delete details['바코드'];
+                    delete details['바코드 번호'];
+                    
+                    // API 바코드만 추가
+                    if(apiBarcode) {
+                        details['바코드'] = apiBarcode;
                     }
+                    
                     showProductDetail(details);
                 } else { throw new Error(getText('errorLoading')); }
             } catch (error) { content.innerHTML = `<div class="no-results">${error.message}</div>`; }
         }
 
         async function getGeminiProductDetails(productName) {
-            const prompt = `'${productName}'(이)라는 한국 상품에 대해 구매자가 궁금해할 만한 상세 정보를 알려줘. 항상 **제조사, 제품 카테고리, 바코드 번호**는 포함해줘. 만약 식품이라면 **칼로리, 영양성분(탄수화물, 단백질, 지방), 전체 성분, 알레르기 정보, 비건 여부**를 추가하고, 화장품이라면 **제품 유형(토너, 앰플 등), 주요 성분, 비건 여부**를 추가해줘. 정보가 없거나 해당 없는 항목은 제외하고, "항목: 값" 형식으로만 나열해줘.`;
+            const prompt = `'${productName}' 상품 정보를 "항목: 값" 형식으로만 나열. 제조사, 제품 카테고리는 필수. 식품이면 칼로리/영양성분/성분/알레르기/비건, 화장품이면 제품유형/주요성분/비건 포함. 설명 없이 데이터만.`;
             try {
                 const response = await fetch(GEMINI_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ "contents": [{ "parts": [{ "text": prompt }] }] }) });
                 if (!response.ok) throw new Error(`Gemini API 오류: Status ${response.status}`);
