@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -137,18 +138,6 @@
             </div> 
             
             <div class="search-options"> 
-                <div class="search-option" onclick="showPage('searchResults')"> 
-                    <div class="option-icon"> 
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"> 
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /> 
-                        </svg> 
-                    </div>
-                    <div class="option-info"> 
-                        <h3 class="option-title" id="searchByName">상품명 검색</h3> 
-                        <p class="option-desc" id="searchByNameDesc">이름이나 브랜드로 제품 찾기</p> 
-                    </div> 
-                </div> 
-                
                 <div class="search-option" onclick="openBarcodeScanner()"> 
                     <div class="option-icon"> 
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"> 
@@ -172,6 +161,18 @@
                         <p class="option-desc" id="searchByImageDesc">카메라로 제품을 비추면 자동 인식</p>
                     </div>
                 </div>
+
+                <div class="search-option" onclick="showPage('searchResults')"> 
+                    <div class="option-icon"> 
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"> 
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /> 
+                        </svg> 
+                    </div>
+                    <div class="option-info"> 
+                        <h3 class="option-title" id="searchByName">상품명 검색</h3> 
+                        <p class="option-desc" id="searchByNameDesc">이름이나 브랜드로 제품 찾기</p> 
+                    </div> 
+                </div> 
             </div> 
             <div class="credit-footer">
                 <img src="ditlogo.png" alt="DIT Logo" class="credit-logo">
@@ -276,17 +277,19 @@
 
         // --- AI 모델 클래스 이름 ---
         const CLASS_NAMES = [
-            'chocopie',   // 0
-            'tonk',       // 1  
-            'coffee',     // 2
-            'milk',       // 3
+            'chocopie',     // 2
+            'coffee',       // 3
             'getorade',   // 4
-            'almond'      // 5
+            'milk',
+            'ohyes',
+            'tonk',
+            'almond'       // 1  
         ];
-
+        
         const CLASS_BARCODES = {
             'chocopie': '8801117535398',
             'tonk': '8801117269203',
+            'ohyes': '8801019308598',
             'coffee': '8801121652022',
             'milk': '8801121112380',
             'getorade': '8801056052256',
@@ -312,11 +315,34 @@
         async function loadAIModel() {
             try {
                 showToast(getText('model_loading'));
-                productModel = await ort.InferenceSession.create('best.onnx');
+                const modelURL = 'https://rawcdn.githack.com/BeomE02/TeamSemicolon/d3190d98ac55aa2fefbdc1dccdb0d6839daf11e0/best.onnx';
+                productModel = await ort.InferenceSession.create(modelURL);
                 console.log('AI 모델 로드 완료');
             } catch (error) {
                 console.error('AI 모델 로드 실패:', error);
             }
+        }
+
+        function typeWriter(element, text, speed) {
+            let i = 0;
+            element.innerHTML = ''; // 시작 전 내용을 비웁니다.
+            const typing = () => {
+                if (i < text.length) {
+                    // '<br>' 태그를 만나면 한 번에 추가하고 인덱스를 4칸 이동
+                    if (text.substring(i, i + 4) === '<br>') {
+                        element.innerHTML = text.substring(0, i + 4) + '<span class="typing-cursor"></span>';
+                        i += 4;
+                    } else {
+                        element.innerHTML = text.substring(0, i + 1) + '<span class="typing-cursor"></span>';
+                        i++;
+                    }
+                    setTimeout(typing, speed);
+                } else {
+                    // 애니메이션이 끝나면 커서 제거
+                    element.innerHTML = text;
+                }
+            };
+            typing();
         }
         
         document.addEventListener('DOMContentLoaded', () => {
@@ -345,25 +371,13 @@
                 document.getElementById('splash').classList.add('fade-out');
             }, 2500);
 
-            const appTitle = document.getElementById('appTitle');
             setTimeout(() => {
-                appTitle.innerHTML = '';
-                typeWriter(appTitle, '한국 제품을<br>쉽게 찾아보세요', 100);
+                const appTitle = document.getElementById('appTitle');
+                const initialTitle = getText('appTitle'); // 현재 언어에 맞는 텍스트를 가져옵니다.
+                typeWriter(appTitle, initialTitle, 100);
             }, 3000);
 
-            function typeWriter(element, text, speed) {
-                let i = 0;
-                const typing = () => {
-                    if (i < text.length) {
-                        element.innerHTML = text.substring(0, i + 1) + '<span class="typing-cursor"></span>';
-                        i++;
-                        setTimeout(typing, speed);
-                    } else {
-                        element.innerHTML = text;
-                    }
-                };
-                typing();
-            }
+            
 
             let searchTimeout;
             const searchInput = document.getElementById('searchInput');
@@ -532,7 +546,7 @@
             
             // 탐지 결과 파싱
             const detections = [];
-            const confThreshold = 0.5; // 신뢰도 임계값
+            const confThreshold = 0.35; // 신뢰도 임계값
             
             for (let i = 0; i < numBoxes; i++) {
                 const offset = i * 11;
@@ -688,7 +702,7 @@
         }
         
         function updateUITexts() {
-            document.getElementById('appTitle').innerHTML = getText('appTitle');
+            // document.getElementById('appTitle').innerHTML = getText('appTitle'); // 이 줄이 삭제된 상태입니다.
             document.getElementById('appSubtitle').textContent = getText('appSubtitle');
             document.getElementById('searchByName').textContent = getText('searchByName');
             document.getElementById('searchByNameDesc').textContent = getText('searchByNameDesc');
@@ -707,6 +721,12 @@
             currentLang = selector.value;
             await translateUIRealtime(currentLang);
             updateUITexts();
+        
+            // 👇 이 부분이 추가되었습니다!
+            const appTitle = document.getElementById('appTitle');
+            const newTitleText = getText('appTitle');
+            typeWriter(appTitle, newTitleText, 50); // 언어 변경 시에는 조금 더 빠른 속도로 실행
+        
             await translateProductCache(currentLang);
         }
 
